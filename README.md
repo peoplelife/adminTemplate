@@ -50,7 +50,7 @@ pnpm dev
 - [MySQL 投产准备](docs/deployment/mysql.md)
 - [部署资源](deploy/README.md)
 
-Dockerfile、生产 Compose、Nginx 和备份脚本尚未实现；根目录不再保留旧 NestJS 的 Compose，不能把当前目录整理视为已完成容器化。
+Dockerfile、生产 Compose、HTTP Nginx 和生产配置模板已生成，使用步骤见 [Docker 部署](docs/deployment/docker.md)。实际容器构建及服务器验收、HTTPS 和备份脚本尚未完成。
 
 ## 2026-11-06 目录迁移
 

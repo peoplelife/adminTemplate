@@ -10,7 +10,7 @@
 
 初始化脚本的建表和插入部分故意不使用 `IF NOT EXISTS`、`INSERT IGNORE` 或覆盖更新：已有表/重复配置应报错，不能掩盖结构差异。MySQL DDL 隐式提交，建表中途失败可能留下部分表；修正原因后使用另一个空库重试，不对已有库直接重跑。不要用客户端 `--force` 忽略错误。
 
-未导出 users、user_roles、role_menus 数据，不包含密码、用户个人信息或开发用户的权限。角色菜单分配需要重新审批；不能把开发库的 admin 授权直接当成生产授权。super_admin 按现有代码访问全部有效菜单，不依赖 role_menus。
+未导出开发库的 users、user_roles、role_menus 数据。SQL 单独初始化管理员 `admin`，密码 `admin123`，并绑定 `super_admin`，不包含开发用户个人信息或授权。角色菜单分配需要重新审批；不能把开发库的 admin 授权直接当成生产授权。super_admin 按现有代码访问全部有效菜单，不依赖 role_menus。
 
 ## 当前结构与实际盘点
 
@@ -46,9 +46,9 @@ CREATE DATABASE admin_template CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 mysql --host=MYSQL_HOST --user=DEPLOY_USER -p --default-character-set=utf8mb4 admin_template < 01-init.sql
 ```
 
-预期：5 张业务表、3 个角色、10 个菜单，孤儿关系计数均为 0。尚未开通管理员时 active_super_admin_accounts=0 是预期结果，但不能据此宣布应用可登录。
+预期：5 张业务表、3 个角色、10 个菜单、1 个初始管理员及其超级管理员角色关系，孤儿关系计数均为 0，active_super_admin_accounts=1。
 
-先由负责人确认首次管理员用户名、交付方式和凭证。当前代码仍直接保存/比较密码，属于投产阻断项；此包不生成默认弱口令或新增明文密码 INSERT。完成 Java 密码哈希改造后，再按最终格式准备一次性的管理员初始化步骤，并将其绑定到 super_admin。此项尚未完成，不能直接把哈希放入当前库并期望现有登录成功。
+初始管理员用户名为 `admin`，密码为 `admin123`，由初始化 SQL 创建并绑定 `super_admin`。按当前 Java 的密码保存/比较方式写入，密码存储改造本次暂不处理。super_admin 访问全部有效菜单，无需额外插入 role_menus。
 
 普通角色还需初始化实际按钮权限并授予菜单。目前导出的菜单 buttonPermission 为空；仅拥有页面菜单，不等于拥有接口权限。代码需要的权限如下：
 
@@ -111,6 +111,6 @@ mysql --host=MYSQL_HOST --user=DEPLOY_USER -p --default-character-set=utf8mb4 ad
 ## 投产验收与未完成项
 
 - 已完成：只读导出结构，去除自增计数；筛选角色和菜单配置；整理索引、外键、权限、初始化、备份恢复步骤。
-- 上线前完成：密码哈希和首次管理员开通；普通角色权限审批及初始化；固定生产 MySQL 版本；创建运行/运维账号；挂载持久化卷；备份排程与异机保存；真实恢复演练。
+- 上线前完成：普通角色权限审批前先验证初始管理员登录；普通角色权限审批及初始化；固定生产 MySQL 版本；创建运行/运维账号；挂载持久化卷；备份排程与异机保存；真实恢复演练。
 - 未执行：生产建库、SQL 初始化、授权或任何现有数据修改；空库 SQL 实际重放及 MySQL 8.4 兼容测试；真实备份恢复与 Docker 部署。
 - 下一步：先确认使用全新数据库还是保留已有数据；按对应路径在隔离测试实例验收，之后再连接生产 Java。

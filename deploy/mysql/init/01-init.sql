@@ -2,7 +2,7 @@
 -- Fresh empty database only. Read-only verification queries are at the end.
 
 -- Baseline exported read-only from development MySQL; 2026-11-06.
--- Fresh empty database only. No user data or passwords.
+-- Fresh empty database only. Includes the initial admin account.
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
@@ -86,7 +86,7 @@ CREATE TABLE `role_menus` (
 
 
 
--- Roles and menu configuration only. No users or development grants.
+-- Initial administrator, roles and menus. No development user data.
 -- Seed data for the fresh database.
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
@@ -106,6 +106,13 @@ INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sor
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_1778841163540_899', '-1', 'AI', '/ai', '', 'Files', '3', '0', '0', 'M', '', '1');
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_1778841682940_869', 'menu_1778841163540_899', '知识库问答', '/ai/intelligentConversation', '/ai/intelligentConversation/index', '', '0', '0', '0', 'C', '', '1');
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_ai_rag_evaluation', 'menu_1778841163540_899', '知识库检索评测', '/ai/rag-evaluation', '/ai/ragEvaluation/index', 'DataAnalysis', '1', '0', '0', 'C', NULL, '1');
+
+INSERT INTO `users` (`username`, `password`, `nickname`, `status`)
+VALUES ('admin', 'admin123', '超级管理员', 1);
+
+INSERT INTO `user_roles` (`user_id`, `role_id`)
+SELECT u.id, r.id FROM users u CROSS JOIN roles r
+WHERE u.username = 'admin' AND r.code = 'super_admin';
 
 COMMIT;
 

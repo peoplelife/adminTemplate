@@ -41,6 +41,9 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://postgres:postgres@localhost:5432/ai_agent_course"
     )
 
+    database_pool_size: int = Field(default=5, ge=1)
+    database_max_overflow: int = Field(default=10, ge=0)
+
     redis_url: str = Field(default="redis://:redis123@localhost:6379/0")
     redis_default_ttl_seconds: int = Field(default=300)
     rate_limit_window_seconds: int = Field(default=60)

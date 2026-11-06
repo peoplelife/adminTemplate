@@ -1,0 +1,171 @@
+name: admin-template
+
+x-python: &python
+  image: admin-template-python:local
+  build:
+    context: ../ai-chat
+  mem_limit: 640m
+  environment:
+    APP_ENV: production
+    DEBUG: "false"
+    DATABASE_POOL_SIZE: "3"
+    DATABASE_MAX_OVERFLOW: "2"
+    DATABASE_URL: "postgresql+asyncpg://ai_chat:${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}@postgres:5432/ai_chat"
+    REDIS_URL: "redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD}@redis:6379/0"
+    RAG_SERVICE_TOKEN: ${RAG_SERVICE_TOKEN:?Set RAG_SERVICE_TOKEN}
+    RAG_DOCUMENT_ROOT: /data/rag-documents
+    DEFAULT_MODEL: ${DEFAULT_MODEL:-deepseek-chat}
+    SUPPORTED_MODELS: ${DEFAULT_MODEL:-deepseek-chat}
+    DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+    DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?Set DEEPSEEK_API_KEY}
+    RAG_EMBEDDING_BASE_URL: ${RAG_EMBEDDING_BASE_URL:-https://api.siliconflow.cn/v1}
+    RAG_EMBEDDING_API_KEY: ${RAG_EMBEDDING_API_KEY:?Set RAG_EMBEDDING_API_KEY}
+    RAG_EMBEDDING_MODEL: ${RAG_EMBEDDING_MODEL:-BAAI/bge-m3}
+    RAG_RERANK_ENABLED: ${RAG_RERANK_ENABLED:-true}
+    RAG_RERANK_BASE_URL: ${RAG_RERANK_BASE_URL:-https://api.siliconflow.cn/v1}
+    RAG_RERANK_API_KEY: ${RAG_RERANK_API_KEY:-}
+    RAG_RERANK_MODEL: ${RAG_RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+    RAG_RERANK_CANDIDATE_K: ${RAG_RERANK_CANDIDATE_K:-20}
+  logging: &logging
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  frontend:
+    build:
+      context: ../frontend
+    image: admin-template-frontend:local
+    mem_limit: 96m
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      java:
+        condition: service_healthy
+    logging: *logging
+
+  java:
+    build:
+      context: ../java-backend
+    image: admin-template-java:local
+    mem_limit: 768m
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: "3000"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/admin_template?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "5"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+      SPRING_DATASOURCE_USERNAME: admin_template
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:?Set APP_JWT_SECRET}
+      APP_UPLOAD_DIRECTORY: /data/uploads
+      AI_RAG_BASE_URL: http://python:8000
+      AI_RAG_SERVICE_TOKEN: ${RAG_SERVICE_TOKEN:?Set RAG_SERVICE_TOKEN}
+      AI_RAG_READ_TIMEOUT: 300s
+      AI_CHAT_ASYNC_TIMEOUT: 5m
+      SPRINGDOC_API_DOCS_ENABLED: "false"
+      SPRINGDOC_SWAGGER_UI_ENABLED: "false"
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--Xms128m -Xmx384m -XX:MaxDirectMemorySize=64m}
+      TZ: UTC
+    volumes:
+      - java-uploads:/data/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      python:
+        condition: service_healthy
+    logging: *logging
+
+  python:
+    <<: *python
+    restart: unless-stopped
+    volumes:
+      - rag-documents:/data/rag-documents
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  migrate:
+    <<: *python
+    restart: "no"
+    mem_limit: 256m
+    command: ["alembic", "upgrade", "head"]
+    healthcheck:
+      disable: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0.44
+    mem_limit: 640m
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: admin_template
+      MYSQL_USER: admin_template
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+      TZ: UTC
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-time-zone=+00:00", "--innodb-buffer-pool-size=128M", "--max-connections=40"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql --protocol=TCP -h 127.0.0.1 -u\"$$MYSQL_USER\" \"$$MYSQL_DATABASE\" -e 'SELECT 1 FROM users LIMIT 1' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 20
+    logging: *logging
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    mem_limit: 384m
+    command: ["postgres", "-c", "shared_buffers=96MB", "-c", "work_mem=2MB", "-c", "maintenance_work_mem=32MB", "-c", "max_connections=30"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ai_chat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}
+      TZ: UTC
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "PGPASSWORD=\"$$POSTGRES_APP_PASSWORD\" psql -h 127.0.0.1 -U ai_chat -d ai_chat -c 'SELECT 1' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 20
+    logging: *logging
+
+  redis:
+    image: redis:7.4-alpine
+    mem_limit: 128m
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    command: ["sh", "-c", "exec redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy noeviction --requirepass \"$$REDIS_PASSWORD\""]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+volumes:
+  mysql-data:
+  postgres-data:
+  redis-data:
+  java-uploads:
+  rag-documents:

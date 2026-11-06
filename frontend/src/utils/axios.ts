@@ -1,3 +1,4 @@
+import { createUuid } from '@/utils/uuid';
 import { LOGIN_URL } from '@/config';
 import router from '@/routers';
 import { useUserStore } from '@/stores/modules/user';
@@ -15,7 +16,7 @@ const service = axios.create({
 service.interceptors.request.use(
 	(config) => {
 		const userStore = useUserStore();
-		config.headers['X-Trace-Id'] ||= crypto.randomUUID();
+		config.headers['X-Trace-Id'] ||= createUuid();
 
 		if (userStore.token) {
 			config.headers['Authorization'] = `Bearer ${userStore.token}`;
@@ -75,7 +76,7 @@ const fetchStream = async (url: string, body: object, { onToken, onEvent, onErro
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'text/event-stream',
-				'X-Trace-Id': crypto.randomUUID(),
+				'X-Trace-Id': createUuid(),
 				Authorization: `Bearer ${userStore.token}`
 			},
 			body: JSON.stringify(body),

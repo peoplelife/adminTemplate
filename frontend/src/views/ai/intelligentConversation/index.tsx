@@ -1,3 +1,4 @@
+import { createUuid } from '@/utils/uuid';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar, type ScrollbarInstance } from 'element-plus';
 
@@ -116,8 +117,8 @@ export default defineComponent({
 				ElMessage.warning('请先创建会话');
 				return;
 			}
-			const userMessageId = crypto.randomUUID();
-			const assistantMessageId = crypto.randomUUID();
+			const userMessageId = createUuid();
+			const assistantMessageId = createUuid();
 			messages.value.push({
 				id: userMessageId,
 				role: 'user',
@@ -142,7 +143,7 @@ export default defineComponent({
 			try {
 				await http.fetchStream(
 					`${API_BASE_URL}/v1/ai/conversations/${activeConversationId.value}/messages/stream`,
-					{ clientRequestId: crypto.randomUUID(), content: message },
+					{ clientRequestId: createUuid(), content: message },
 					{
 						signal: controller.signal,
 						onEvent: (event: { event: string; data: string }) => {

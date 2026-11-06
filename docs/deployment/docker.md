@@ -21,6 +21,18 @@
 
 Java 激活 `prod`。Python 设置 `APP_ENV=production`、`DEBUG=false`；同一 `DATABASE_URL` 供应用及 Alembic 使用。`RAG_SERVICE_TOKEN` 同时映射给 Java 和 Python，不要另外填写两套凭证。当前生成器仅接入 DeepSeek，`DEFAULT_MODEL` 应选择其可用模型，不要仅改成 Qwen/OpenAI 模型名。
 
+## 一条命令部署
+
+首次部署和后续更新均可在服务器运行：
+
+```sh
+bash /opt/apps/adminTemplate/deploy/deploy.sh
+```
+
+脚本自动定位 deploy 目录，检查 Docker、`.env` 和 Compose 配置，然后停止前端/Java/Python、逐个构建镜像、等待数据库健康、重新执行 Alembic 迁移，最后启动应用并等待健康检查。适用于当前 4 GB 服务器，更新时会有维护停机，构建阶段失败也会保持应用停止。
+
+任一步失败会返回非零状态并打印容器状态，不继续后面的步骤，不删除数据卷，不自动回滚数据库。修复错误后可以重新运行，构建会复用缓存。备份、拉取代码、上传 `.env`、配置宝塔和业务验收仍需单独完成；脚本不修改 DNS、Swap 或宝塔。首次使用前填写生产配置，更新前先备份并执行 `git pull --ff-only`。
+
 ## 首次部署
 
 在服务器克隆仓库并进入部署目录：

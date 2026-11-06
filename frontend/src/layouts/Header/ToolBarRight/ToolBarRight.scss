@@ -1,0 +1,11 @@
+.toolbar-left {
+	display: flex;
+	flex-direction: row;
+	.header-icon {
+		display: flex;
+		flex-direction: row;
+	}
+	.username {
+		margin: 0 20px;
+	}
+}

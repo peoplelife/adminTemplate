@@ -1,0 +1,58 @@
+from enum import IntEnum
+
+
+class ErrorCode(IntEnum):
+    SUCCESS = 0
+
+    BAD_REQUEST = 40000
+    UNAUTHORIZED = 40100
+    FORBIDDEN = 40300
+    NOT_FOUND = 40400
+    VALIDATION_ERROR = 42200
+
+    MODEL_NOT_SUPPORTED = 50001
+    LLM_CALL_FAILED = 50002
+    RAG_QUERY_FAILED = 50003
+    TOOL_CALL_FAILED = 50004
+    AGENT_RUN_FAILED = 50005
+
+    RAG_KNOWLEDGE_BASE_NOT_FOUND = 160101
+    RAG_KNOWLEDGE_BASE_DISABLED = 160102
+    RAG_KNOWLEDGE_BASE_EMPTY = 160103
+    RAG_DOCUMENT_NOT_FOUND = 160111
+    RAG_DOCUMENT_INVALID = 160112
+    RAG_JOB_NOT_FOUND = 160113
+    RAG_CONVERSATION_NOT_FOUND = 160121
+    RAG_CONVERSATION_UNAVAILABLE = 160122
+    RAG_GENERATION_CONFLICT = 160123
+    RAG_REQUEST_ALREADY_PROCESSED = 160124
+    RAG_REQUEST_CONFLICT = 160125
+    RAG_EMBEDDING_FAILED = 160501
+    RAG_GENERATION_FAILED = 160502
+    RAG_INGESTION_FAILED = 160503
+    RAG_RERANK_FAILED = 160504
+
+    INTERNAL_ERROR = 50000
+    LLM_API_KEY_MISSING = 50010
+    LLM_MODEL_NOT_FOUND = 50011
+    LLM_RATE_LIMITED = 50012
+    LLM_TIMEOUT = 50013
+    LLM_RESPONSE_PARSE_FAILED = 50014
+    LLM_PROVIDER_ERROR = 50015
+    STRUCTURED_OUTPUT_PARSE_FAILED = 50016
+
+
+class AppException(Exception):
+    def __init__(
+        self,
+        message: str,
+        code: int = ErrorCode.BAD_REQUEST,
+        status_code: int = 400,
+        data: dict | list | None = None,
+    ):
+        self.message = message
+        self.code = int(code)
+        self.status_code = status_code
+        self.data = data
+
+        super().__init__(message)

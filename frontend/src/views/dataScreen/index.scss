@@ -1,0 +1,15 @@
+.data-content {
+	display: flex;
+	height: 100%;
+	.left,
+	.right {
+		width: 460px;
+		background-color: red;
+	}
+	.center {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}

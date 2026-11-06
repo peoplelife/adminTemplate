@@ -1,0 +1,121 @@
+.composer {
+	position: static;
+	flex: 0 0 auto;
+	margin: 8px 50px 0 50px;
+	pointer-events: none;
+}
+
+.composer__box {
+	padding: 12px 14px 10px;
+	border: 1px solid #d8e6e2;
+	border-radius: 18px;
+	background: rgba(255, 255, 255, 0.98);
+	backdrop-filter: blur(12px);
+	box-shadow: 0 16px 28px rgba(57, 87, 82, 0.12);
+	pointer-events: auto;
+}
+
+.composer__input {
+	width: 100%;
+	min-height: 48px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #334645;
+	font-size: 14px;
+	line-height: 1.5;
+	resize: none;
+	outline: none;
+	font-family: inherit;
+}
+
+.composer__input::placeholder {
+	color: #a0b2af;
+}
+
+.composer__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 8px;
+}
+
+.composer__tools {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.icon-button {
+	display: inline-flex;
+	width: 32px;
+	height: 32px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #deebe7;
+	border-radius: 999px;
+	background: #fff;
+	color: #89a09d;
+	cursor: pointer;
+	transition:
+		border-color 0.2s ease,
+		color 0.2s ease,
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.icon-button:hover {
+	border-color: #0fb59f;
+	color: #0fb59f;
+	transform: translateY(-1px);
+	box-shadow: 0 8px 18px rgba(15, 181, 159, 0.14);
+}
+
+.icon-button--muted {
+	width: 30px;
+	height: 30px;
+	border-color: transparent;
+	background: transparent;
+	box-shadow: none;
+}
+
+.icon-button--muted:hover {
+	background: #f1f7f6;
+	box-shadow: none;
+}
+
+.send-button {
+	display: inline-flex;
+	width: 36px;
+	height: 36px;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #11b9a4 0%, #078c7d 100%);
+	box-shadow: 0 12px 24px rgba(8, 145, 129, 0.24);
+	color: #fff;
+	cursor: pointer;
+}
+
+.composer__hint {
+	margin: 8px 0 0;
+	color: #9cacab;
+	font-size: 12px;
+	text-align: center;
+	pointer-events: auto;
+}
+
+@media (max-width: 1200px) {
+	.composer {
+		margin-left: 20px;
+	}
+}
+
+@media (max-width: 960px) {
+	.composer {
+		margin-top: 12px;
+		margin-right: 0;
+		margin-left: 0;
+	}
+}

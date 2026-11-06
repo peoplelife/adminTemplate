@@ -1,0 +1,45 @@
+server:
+  port: ${SERVER_PORT:3000}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: admin-template-java-backend
+  mvc:
+    async:
+      request-timeout: "${AI_CHAT_ASYNC_TIMEOUT:5m}"
+  datasource:
+    url: "${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:3306/admin_template?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}"
+    username: "${SPRING_DATASOURCE_USERNAME:root}"
+    password: "${SPRING_DATASOURCE_PASSWORD:123456}"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+springdoc:
+  swagger-ui:
+    path: /docs
+
+app:
+  jwt:
+    secret: "${APP_JWT_SECRET:}"
+  user:
+    default-password: "${APP_USER_DEFAULT_PASSWORD:123456}"
+  upload:
+    directory: "${APP_UPLOAD_DIRECTORY:public}"
+  ai-rag:
+    base-url: "${AI_RAG_BASE_URL:http://127.0.0.1:8000}"
+    service-token: "${AI_RAG_SERVICE_TOKEN:}"
+    connect-timeout: "${AI_RAG_CONNECT_TIMEOUT:3s}"
+    read-timeout: "${AI_RAG_READ_TIMEOUT:60s}"

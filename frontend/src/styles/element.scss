@@ -1,0 +1,19 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+	$colors: (
+		'primary': (
+			'base': green
+		)
+	)
+);
+@use 'element-plus/theme-chalk/src/index.scss' as *;
+
+.el-drawer {
+	.el-drawer__header {
+		margin-bottom: 0;
+		padding: 16px 20px;
+		border-bottom: 1px solid var(--el-border-color);
+	}
+	.el-drawer__footer {
+		border-top: 1px solid var(--el-border-color);
+	}
+}

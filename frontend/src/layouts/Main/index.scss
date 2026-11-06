@@ -1,0 +1,19 @@
+.el-main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+	padding: 10px 12px;
+	overflow: hidden;
+	box-sizing: border-box;
+	// background-color: #f2f3f5;
+}
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}

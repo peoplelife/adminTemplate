@@ -1,0 +1,22 @@
+# Local credentials: commit examples only.
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.ruff_cache/
+**/.superpowers/
+**/target/
+**/dist/
+**/.idea/
+**/.vscode/
+**/*.log
+ai-chat/data/
+java-backend/public/
+deploy/data/
+deploy/backups/
+deploy/certs/
+.DS_Store

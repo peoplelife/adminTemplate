@@ -8,4 +8,4 @@
 
 生产私有配置使用本目录的 `.env`，不得提交。数据库、公开上传及私有原文使用独立持久化卷，不放源代码目录；私有原文不挂载给 Nginx。服务间使用 java、python、mysql、postgres、redis 等服务名通信。
 
-使用步骤和验证边界见 [Docker 部署](../docs/deployment/docker.md)。先填写 `.env` 的模型 API Key 并检查其他参数，再执行 Compose；本机没有 Docker Engine，尚未完成实际容器构建和启动验收。不包含 HTTPS、CI/CD 或备份脚本。
+使用步骤和验证边界见 [Docker 部署](../docs/deployment/docker.md)。CI/CD 工作流位于根目录 `.github/workflows/ci-cd.yml`，镜像发布脚本为 `deploy/release.sh`；GitHub Secrets、GHCR 登录和服务器业务验收仍需配置。不包含 HTTPS 或备份脚本。

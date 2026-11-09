@@ -1,7 +1,7 @@
 name: admin-template
 
 x-python: &python
-  image: admin-template-python:local
+  image: ${PYTHON_IMAGE:-admin-template-python:local}
   build:
     context: ../ai-chat
   mem_limit: 640m
@@ -36,7 +36,7 @@ services:
   frontend:
     build:
       context: ../frontend
-    image: admin-template-frontend:local
+    image: ${FRONTEND_IMAGE:-admin-template-frontend:local}
     mem_limit: 96m
     restart: unless-stopped
     ports:
@@ -51,7 +51,7 @@ services:
   java:
     build:
       context: ../java-backend
-    image: admin-template-java:local
+    image: ${JAVA_IMAGE:-admin-template-java:local}
     mem_limit: 768m
     restart: unless-stopped
     environment:

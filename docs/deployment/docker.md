@@ -1,6 +1,6 @@
 # 单机 Docker 部署
 
-目标为 Ubuntu 22、4 核 4 GB 服务器，公网入口为 `http://189.24.64.102/`，沿用宝塔 Nginx 的 80 端口。需要 Docker Engine 和 Docker Compose v2（建议 2.30 以上）。这里只开放 HTTP 端口，不配置 HTTPS 或 CI/CD。
+目标为 Ubuntu 22、4 核 4 GB 服务器，公网入口为 `http://189.24.64.102/`，沿用宝塔 Nginx 的 80 端口。需要 Docker Engine 和 Docker Compose v2（建议 2.30 以上）。这里只开放 HTTP 端口，不配置 HTTPS。
 
 ## 配置分别放在哪里
 

@@ -21,17 +21,13 @@
 
 Java 激活 `prod`。Python 设置 `APP_ENV=production`、`DEBUG=false`；同一 `DATABASE_URL` 供应用及 Alembic 使用。`RAG_SERVICE_TOKEN` 同时映射给 Java 和 Python，不要另外填写两套凭证。当前生成器仅接入 DeepSeek，`DEFAULT_MODEL` 应选择其可用模型，不要仅改成 Qwen/OpenAI 模型名。
 
-## 一条命令部署
+## CI/CD 发布
 
-首次部署和后续更新均可在服务器运行：
+`matser` 分支的 push 会触发根目录 `.github/workflows/ci-cd.yml`：先运行前端、Java 和 Python 测试，再构建并推送三个 GHCR 镜像，最后通过 SSH 调用服务器上的 `deploy/release.sh`。发布脚本只拉取指定提交的镜像，执行 Alembic 迁移，等待数据库和应用健康后完成更新；服务器上的 `deploy/.env` 不会被工作流覆盖。
 
-```sh
-bash /opt/apps/adminTemplate/deploy/deploy.sh
-```
+日常更新只需要提交并推送到 `matser`。如果需要查看状态，在 GitHub Actions 查看对应提交；服务器上可执行 `docker compose ps -a` 和 `docker compose logs --tail=100 java python migrate` 检查容器。工作流失败时不会删除数据卷，先修复失败原因，再重新运行对应工作流。
 
-脚本自动定位 deploy 目录，检查 Docker、`.env` 和 Compose 配置，然后停止前端/Java/Python、逐个构建镜像、等待数据库健康、重新执行 Alembic 迁移，最后启动应用并等待健康检查。适用于当前 4 GB 服务器，更新时会有维护停机，构建阶段失败也会保持应用停止。
-
-任一步失败会返回非零状态并打印容器状态，不继续后面的步骤，不删除数据卷，不自动回滚数据库。修复错误后可以重新运行，构建会复用缓存。备份、拉取代码、上传 `.env`、配置宝塔和业务验收仍需单独完成；脚本不修改 DNS、Swap 或宝塔。首次使用前填写生产配置，更新前先备份并执行 `git pull --ff-only`。
+首次部署需要准备服务器目录、`deploy/.env`、GitHub Actions Secrets、GHCR 拉取权限和宝塔反向代理；这些步骤完成后不再通过服务器上的本地构建脚本发布。
 
 ## 首次部署
 
@@ -54,17 +50,9 @@ chmod 600 .env
 
 本次本地生成的 `deploy/.env` 已随机生成内部密码和凭证，且已复制现有模型 API Key；该文件不在 Git 中，服务器克隆后仍需自行创建。不要把校验输出中的完整环境配置发到公开渠道。
 
-所有后续命令在 `deploy/` 中执行：
+准备 GitHub Actions 的 `DEPLOY_HOST`、`DEPLOY_USER`、`DEPLOY_PORT`、`DEPLOY_SSH_KEY` 和 `DEPLOY_KNOWN_HOSTS` Secrets。当前 SSH 端口为 `58078`，known_hosts 主机项必须使用 `[189.24.64.102]:58078`。服务器发布用户需要具备 Docker 权限，并使用具有 `read:packages` 权限的凭证登录 GHCR；工作流推送镜像使用 GitHub 自带的 `GITHUB_TOKEN`。
 
-```sh
-docker compose --env-file .env config --quiet
-docker compose build frontend
-docker compose build java
-docker compose build python
-docker compose up -d
-docker compose ps -a
-docker compose logs --tail=100 migrate java python
-```
+服务器上的 `/opt/apps/adminTemplate` 归发布用户管理，提前创建并填写 `deploy/.env`、配置宝塔代理。之后推送到 `matser`，或在 GitHub Actions 中手动运行 CI/CD。工作流会上传部署目录并执行发布脚本，日常更新不需要在服务器 `git pull` 或构建镜像。
 
 启动链为 PostgreSQL 就绪 → `migrate` 成功 → Python 就绪 → Java 就绪 → 前端；Java 同时等待 MySQL 初始化完成，Python 同时等待 Redis。`migrate` 正常退出码应为 0；`up -d` 返回不代表所有服务已经就绪，要检查健康状态和日志。
 
@@ -106,35 +94,20 @@ Compose 项目名固定为 `admin-template`，实际卷名带此前缀。私有�
 
 长期运行上限合计 2656 MiB（约 2.59 GiB），不是预分配内存，也不是实测容量保证。Java 上限包含堆外及线程开销；数据库每连接内存和 Redis AOF 也有额外开销。Ubuntu、宝塔及原有数据库仍会消耗内存，超限可能导致容器 OOM。建议宿主机配置约 4 GiB Swap 缓冲短时高峰，并观察 `free -h`、`docker stats` 和 `docker compose ps -a`，再根据真实并发和文档大小调整。
 
-构建不受 Compose 的运行内存上限控制。按上述三个 build 命令逐个构建；前端构建的 Node 堆上限为 768 MiB，Maven 堆上限为 512 MiB，均不等于构建进程总内存限制。在小内存服务器更新时，可在备份后的维护窗口先停止前端、Java、Python再构建，减少旧服务与构建进程争抢内存；构建失败不启动新版本。
+镜像在 GitHub Actions 中构建，服务器只拉取并运行镜像，不再承担 Node 和 Maven 编译的内存开销。发布时仍会短暂停止应用以执行迁移和替换容器。
 
 ## 更新与停止
 
-更新前备份 MySQL、PostgreSQL、公开上传和私有原文。修改 `.env` 中初始化数据库密码不会自动修改已有库账号密码，需先在数据库内完成对应变更。
+更新前备份 MySQL、PostgreSQL、公开上传和私有原文。修改 `.env` 中初始化数据库密码不会自动修改已有库账号密码，需先在数据库内完成对应变更。数据库迁移由 `release.sh` 在应用更新前执行；应用代码回退不代表数据库可直接回退，数据库回退需要单独确认迁移及恢复方案。
 
-有数据库迁移的更新，在维护窗口执行：
-
-```sh
-git pull --ff-only
-docker compose build frontend
-docker compose build java
-docker compose build python
-docker compose stop frontend java python
-docker compose up -d mysql postgres redis
-docker compose run --rm migrate
-# 上一步成功后才继续；失败时保持应用停止并检查日志。
-docker compose up -d --force-recreate
-docker compose ps -a
-```
-
-这里显式停止应用后迁移，避免旧实例与新表结构同时工作。不要直接依赖反复重启应用来处理迁移失败。应用代码回退不代表数据库可直接回退，数据库回退需要单独确认迁移及恢复方案。
+如需手工发布已推送的镜像，可在服务器的 `deploy/` 目录执行 `IMAGE_TAG=完整提交SHA bash release.sh`。这只适用于故障处理或回滚，不作为日常发布方式。
 
 ```sh
 docker compose down
 ```
 
-普通 `down` 保留数据卷。不要执行 `down -v`，该选项会删除项目数据卷。备份和恢复脚本、HTTPS 配置及服务器全流程验收尚未完成。
+普通 `down` 保留数据卷。不要执行 `down -v`，该选项会删除项目数据卷。备份和恢复脚本、HTTPS 配置仍需单独完善。
 
 ## 当前验证边界
 
-配置生成后需要校验 Compose 的变量展开、依赖、挂载、路由和镜像构建。开发机没有 Docker Engine，实际镜像构建、Nginx 启动、空库初始化及服务器连通验收仍需在具备 Docker 的环境执行。
+服务器已完成部署，CI/CD 已完成一次发布。后续发布仍需检查对应 Actions 结果，并按变更范围验证登录、上传、问答和评测；容器健康检查不能代替业务验收。HTTPS 和备份恢复演练尚需完善。

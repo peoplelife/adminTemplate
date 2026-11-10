@@ -50,7 +50,7 @@ pnpm dev
 - [MySQL 投产准备](docs/deployment/mysql.md)
 - [部署资源](deploy/README.md)
 
-Dockerfile、生产 Compose、HTTP Nginx 和生产配置模板已生成，使用步骤见 [Docker 部署](docs/deployment/docker.md)。实际容器构建及服务器验收、HTTPS 和备份脚本尚未完成。
+Dockerfile、生产 Compose、HTTP Nginx 和生产配置模板已生成。正式发布由 GitHub Actions 构建镜像并通过 `deploy/release.sh` 更新服务器，使用说明见 [Docker 部署](docs/deployment/docker.md)。HTTPS 和备份恢复仍需单独完善。
 
 ## 2026-11-06 目录迁移
 

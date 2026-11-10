@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     rag_document_root: str = Field(default="")
     rag_embedding_base_url: str = Field(default="")
     rag_embedding_api_key: str = Field(default="")
-    rag_embedding_model: str = Field(default="bge-m3")
+    rag_embedding_model: str = Field(default="BAAI/bge-m3")
     rag_embedding_timeout_seconds: float = Field(default=30)
     rag_embedding_batch_size: int = Field(default=32)
     rag_rerank_enabled: bool = Field(default=False)

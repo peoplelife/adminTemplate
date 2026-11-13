@@ -12,15 +12,19 @@ class AnswerGenerator:
 
     async def generate(
         self, messages: list[LLMMessage], *, model: str | None = None, max_tokens: int | None = None,
+        tools: list[dict] | None = None, tool_choice: str | dict | None = None,
+        response_format: dict | None = None, thinking: bool | None = None,
     ) -> LLMResponse:
-        request = LLMRequest(model=model or settings.default_model, messages=messages, max_tokens=max_tokens)
+        request = LLMRequest(model=model or settings.default_model, messages=messages, max_tokens=max_tokens, tools=tools, tool_choice=tool_choice, response_format=response_format, thinking=thinking)
         provider = self.provider or LLMProviderFactory.create(infer_provider_from_model(request.model))
         return await provider.chat(request)
 
     async def stream(
         self, messages: list[LLMMessage], *, model: str | None = None, max_tokens: int | None = None,
+        tools: list[dict] | None = None, tool_choice: str | dict | None = None,
+        response_format: dict | None = None, thinking: bool | None = None,
     ) -> AsyncGenerator[LLMStreamChunk, None]:
-        request = LLMRequest(model=model or settings.default_model, messages=messages, max_tokens=max_tokens, stream=True)
+        request = LLMRequest(model=model or settings.default_model, messages=messages, max_tokens=max_tokens, stream=True, tools=tools, tool_choice=tool_choice, response_format=response_format, thinking=thinking)
         provider = self.provider or LLMProviderFactory.create(infer_provider_from_model(request.model))
         stream = provider.stream_chat(request)
         try:

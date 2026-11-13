@@ -36,52 +36,8 @@
 .composer__footer {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-end;
 	margin-top: 8px;
-}
-
-.composer__tools {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.icon-button {
-	display: inline-flex;
-	width: 32px;
-	height: 32px;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid #deebe7;
-	border-radius: 999px;
-	background: #fff;
-	color: #89a09d;
-	cursor: pointer;
-	transition:
-		border-color 0.2s ease,
-		color 0.2s ease,
-		transform 0.2s ease,
-		box-shadow 0.2s ease;
-}
-
-.icon-button:hover {
-	border-color: #0fb59f;
-	color: #0fb59f;
-	transform: translateY(-1px);
-	box-shadow: 0 8px 18px rgba(15, 181, 159, 0.14);
-}
-
-.icon-button--muted {
-	width: 30px;
-	height: 30px;
-	border-color: transparent;
-	background: transparent;
-	box-shadow: none;
-}
-
-.icon-button--muted:hover {
-	background: #f1f7f6;
-	box-shadow: none;
 }
 
 .send-button {

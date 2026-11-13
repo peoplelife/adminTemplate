@@ -4,6 +4,8 @@ x-python: &python
   image: ${PYTHON_IMAGE:-admin-template-python:local}
   build:
     context: ../ai-chat
+    additional_contexts:
+      template-docs: ../frontend/docs
   mem_limit: 640m
   environment:
     APP_ENV: production

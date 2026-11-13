@@ -4,8 +4,9 @@ import { ElIcon, ElMessage, ElMessageBox, ElScrollbar, type ScrollbarInstance } 
 
 import './index.scss';
 import Siderbar from './siderbar';
-import ChatInput from './chatInput';
-import MessageBubble from './messageBubble';
+import ChatInput from '@/components/ai/chatInput';
+import MessageBubble from '@/components/ai/messageBubble';
+import MessageSources from './messageSources';
 import http from '@/utils/axios';
 import { postV1AiKnowledgeBases } from '@/api/modules/v1';
 
@@ -66,12 +67,7 @@ export default defineComponent({
 			messages.value = message;
 			scrollConversationToBottom(true);
 		};
-		const selectKnowledgeBase = ({
-			conversationId
-		}: {
-			selectedKnowledgeBase: string;
-			conversationId: string;
-		}) => {
+		const selectKnowledgeBase = ({ conversationId }: { selectedKnowledgeBase: string; conversationId: string }) => {
 			activeConversationId.value = conversationId;
 		};
 		const selectConversation = (conversationId: string) => {
@@ -189,7 +185,7 @@ export default defineComponent({
 					const assistantMessage = messages.value.find((item) => item.id === assistantMessageId);
 					if (assistantMessage) {
 						assistantMessage.status = 'error';
-							assistantMessage.streamStage = undefined;
+						assistantMessage.streamStage = undefined;
 						assistantMessage.content ||= 'AI 会话流意外结束';
 					}
 				}
@@ -215,11 +211,25 @@ export default defineComponent({
 				<div class="conversation-main">
 					<ElScrollbar ref={conversationScrollRef} onScroll={handleConversationScroll}>
 						{messages.value.map((message) => {
-							return <MessageBubble key={message.id} message={message} />;
+							return (
+								<MessageBubble
+									key={message.id}
+									message={message}
+									statusText={message.streamStage === 'retrieving' ? '正在检索知识库' : '正在生成回答'}
+								>
+									<MessageSources sources={message.sources || []} />
+								</MessageBubble>
+							);
 						})}
 					</ElScrollbar>
 					{!autoFollowConversation.value ? (
-						<button class="conversation-follow-button" type="button" title="回到底部" aria-label="回到底部" onClick={returnToLatest}>
+						<button
+							class="conversation-follow-button"
+							type="button"
+							title="回到底部"
+							aria-label="回到底部"
+							onClick={returnToLatest}
+						>
 							<ElIcon>
 								<ArrowDown />
 							</ElIcon>

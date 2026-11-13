@@ -9,8 +9,8 @@ import java.util.UUID;
 @Service
 public class AiEvaluationService {
     private static final String ROOT = "/api/v1/rag/evaluation-datasets";
-    private final AiRagService transport;
-    public AiEvaluationService(AiRagService transport) { this.transport = transport; }
+    private final AiServiceClient transport;
+    public AiEvaluationService(AiServiceClient transport) { this.transport = transport; }
 
     public Dataset createDataset(DatasetRequest request, AuthenticatedUser user, String traceId) {
         return transport.jsonRequest(HttpMethod.POST, ROOT, request, user, traceId, Dataset.class);

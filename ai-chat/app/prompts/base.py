@@ -14,6 +14,7 @@ class PromptScenario(str,Enum):
     RAG_QA = "rag_qa"
     RAG_EVALUATION = "rag_evaluation"
     AGENT_PLANNER = "agent_planner"
+    PAGE_GENERATION = "page_generation"
 
 class PromptMessageTemplate(BaseModel):
     role: PromptRole = Field(..., description="消息角色")

@@ -96,6 +96,7 @@ java -jar target/admin-template-backend-0.1.0-SNAPSHOT.jar --spring.profiles.act
 | 菜单 | `GET/POST /v1/menus`、`PATCH/DELETE /v1/menus/{id}` |
 | 文件 | `POST/DELETE /v1/files`、`POST /v1/files/batch` |
 | AI 会话 | `GET/POST /v1/ai/conversations`、`GET/PATCH/DELETE /v1/ai/conversations/{conversationId}`、`GET /v1/ai/conversations/{conversationId}/messages`、`POST /v1/ai/conversations/{conversationId}/messages/stream`（SSE） |
+| AI 页面生成 | `GET /v1/ai/page-agent/workspace`、`POST /v1/ai/page-agent/reset`、`POST /v1/ai/page-agent/messages/stream`（SSE） |
 | AI 知识库 | `GET/POST /v1/ai/knowledge-bases`、`GET /v1/ai/knowledge-bases/{knowledgeBaseId}`、`POST /v1/ai/knowledge-bases/{knowledgeBaseId}/retrieval-preview` |
 | AI 评测集 | `GET/POST /v1/ai/evaluation-datasets`、`PUT/DELETE /v1/ai/evaluation-datasets/{datasetId}` |
 | AI 评测样本 | `GET/POST /v1/ai/evaluation-datasets/{datasetId}/cases`、`PUT/DELETE /v1/ai/evaluation-datasets/{datasetId}/cases/{caseId}` |
@@ -114,6 +115,8 @@ java -jar target/admin-template-backend-0.1.0-SNAPSHOT.jar --spring.profiles.act
 会话流开始前的业务失败返回 HTTP 200 的 `Result` JSON，例如生成冲突 `160123`、幂等内容冲突 `160125`；开始后通过 SSE `error` 事件返回失败。Python 每约 15 秒发送 `: ping` 注释心跳，单次生成上限为 180 秒；中断/超时保留已生成的部分回答。启动 Java 时必须提供与 Python `RAG_SERVICE_TOKEN` 一致的 `AI_RAG_SERVICE_TOKEN`，包括从 IDE 重新启动时。内部请求使用 HTTP/1.1，以兼容 Uvicorn 并支持 PATCH。
 
 `/v1/knowledge-bases/**` 未迁移。此 Java 工程不直接依赖 PostgreSQL、pgvector、Ollama 或 LangChain。
+
+页面生成工作区按当前登录用户隔离，恢复和重置接口返回 `messages / pageSpec / preview`；发送消息仅接受 `content`（非空、最多 4000 字符），使用公共默认模型。流返回 `status / message / clarification / page_spec / preview / done / error` 事件及心跳，Java 透传服务端身份和 trace ID。页面预览数据为合成数据；工作区由 Python Redis 保存。沿用 `AI_RAG_*` 配置和 SSE 错误约定。
 
 在线评测沿用 JWT、服务凭证和追踪头，所有者取自已认证身份。创建返回 201、删除返回 204，分页使用 `page / pageSize`。一次同步评测 1～50 道题，可开启答案生成及评审；前端评测请求和 Java RAG 读取默认均为 60 秒，超时后应先刷新运行历史确认是否保存。前端入口为“AI → 知识库检索评测”（`/#/ai/rag-evaluation`），菜单组件路径为 `/ai/ragEvaluation/index`。菜单 SQL 见 `docs/sql/2026-11-05-add-ai-evaluation-menu.sql`；使用前需重启三端并升级 Python Alembic 迁移。
 

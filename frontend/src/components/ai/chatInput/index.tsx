@@ -1,5 +1,6 @@
-import { ArrowUp, Microphone, Paperclip, Picture } from '@element-plus/icons-vue';
+import { ArrowUp } from '@element-plus/icons-vue';
 import { ElIcon } from 'element-plus';
+import { defineComponent, h, ref } from 'vue';
 import './index.scss';
 
 export default defineComponent({
@@ -8,7 +9,8 @@ export default defineComponent({
 		disabled: {
 			type: Boolean,
 			default: false
-		}
+		},
+		placeholder: { type: String, default: '输入您的问题...' }
 	},
 	emits: ['sendMessage'],
 	setup(props, { emit }) {
@@ -17,15 +19,14 @@ export default defineComponent({
 			composerValue.value = e.target.value;
 		};
 		const handleKeydown = (e) => {
-			if (e.key === 'Enter' && !e.shiftKey) {
+			if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
 				sendMessage();
 				e.preventDefault();
 			}
 		};
-		const handleToolClick = () => {};
 		const sendMessage = () => {
 			const content = composerValue.value.trim();
-			if (!content) return;
+			if (!content || props.disabled) return;
 			emit('sendMessage', content);
 			composerValue.value = '';
 		};
@@ -36,25 +37,21 @@ export default defineComponent({
 				<div class="composer__box">
 					<textarea
 						class="composer__input"
-						placeholder="输入您的问题..."
+						placeholder={props.placeholder}
+						aria-label={props.placeholder}
 						disabled={props.disabled}
 						value={composerValue.value}
 						onInput={(e) => handleInput(e)}
 						onKeydown={(e) => handleKeydown(e)}
 					/>
 					<div class="composer__footer">
-						<div class="composer__tools">
-							<button class="icon-button icon-button--muted" type="button" onClick={() => handleToolClick()}>
-								{renderIcon(Paperclip)}
-							</button>
-							<button class="icon-button icon-button--muted" type="button" onClick={() => handleToolClick()}>
-								{renderIcon(Picture)}
-							</button>
-							<button class="icon-button icon-button--muted" type="button" onClick={() => handleToolClick()}>
-								{renderIcon(Microphone)}
-							</button>
-						</div>
-						<button class="send-button" type="button" disabled={props.disabled} onClick={() => sendMessage()}>
+						<button
+							class="send-button"
+							type="button"
+							disabled={props.disabled || !composerValue.value.trim()}
+							aria-label="发送消息"
+							onClick={() => sendMessage()}
+						>
 							{renderIcon(ArrowUp)}
 						</button>
 					</div>

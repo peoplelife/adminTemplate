@@ -491,3 +491,25 @@ render: ({ row }) => <ElButton onClick={() => exposes.openEdit(row)}>编辑</ElB
 - 新增和编辑提交时使用 `setSubmitLoading`，并在 `finally` 中恢复按钮状态。
 - 操作列只放必要操作，复杂操作使用自定义按钮，不修改 `BaseTable` 内部状态。
 - 修改 `BaseTable` 的 props 或类型时，同时检查用户、角色、菜单三个现有页面。
+
+## 8. 页面 Agent 的声明式预览
+
+页面 Agent 查询本文后，使用受约束的 PageSpec 配置，前端再转换为上面的 BaseTable schema；不直接执行文档中的 TSX、render、回调或 URL。
+
+### 8.1 表格边框 border、斑马纹 stripe、固定表头 height
+
+`PageSpec.table` 映射到 `tableConfig.attrs`。取消边框用 `{ "border": false }`；斑马纹用 `{ "stripe": true }`；`size` 可选 small/default/large；`showHeader: false` 隐藏表头；`height: 420` 设置表格高度并让内容区域滚动，表头固定。没有 `header.fixed` 这样的属性。
+
+### 8.2 列宽、对齐、固定列与排序
+
+`fields[].column` 映射到每一列的 attrs：`width` 设置列宽，`minWidth` 设置最小宽度，`align` 为 left/center/right，`fixed` 为 left/right 或 null（取消固定），`sortable` 开启本页数据排序，`showOverflowTooltip` 为溢出文本显示提示。列顺序沿用 fields 顺序。
+
+### 8.3 分页每页条数 pageSize、pageSizes
+
+`PageSpec.pagination` 配置 `enabled`、`pageSize`、`pageSizes`、`background`。例如 `{ "enabled": true, "pageSize": 20, "pageSizes": [10, 20, 50], "background": true }`。设置 `enabled: false` 隐藏分页并显示全部筛选结果，不会只截取默认一页。
+
+### 8.4 示例数据 sampleData
+
+`PageSpec.sampleData` 是对象数组，最多 100 行，每个键必须是已定义的字段 key。数字字段用数字，文本字段用字符串，select/radio 使用 options.value。缺省时生成三行演示数据；空数组显示空表；明确设置 null 可恢复自动示例。行 id 由预览编译器分配，不由模型填写。
+
+例如字段 name/age 定义好后，使用 `{ "sampleData": [{ "name": "张三", "age": 28 }, { "name": "李四", "age": 32 }] }` 替换示例。这个操作只影响预览和工作区，不写入用户业务数据库。

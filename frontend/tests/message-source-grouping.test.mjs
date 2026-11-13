@@ -7,7 +7,7 @@ const server = await createServer({
 	logLevel: 'silent',
 	server: { middlewareMode: true }
 });
-const messageBubble = await server.ssrLoadModule('/src/views/ai/intelligentConversation/messageBubble/index.tsx');
+const messageBubble = await server.ssrLoadModule('/src/views/ai/intelligentConversation/messageSources/index.tsx');
 
 after(() => server.close());
 

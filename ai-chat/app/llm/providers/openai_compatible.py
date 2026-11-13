@@ -18,6 +18,7 @@ from app.llm.schemas import (
     LLMResponse,
     LLMStreamChunk,
     LLMToolCall,
+    LLMToolCallDelta,
     LLMUsage,
 )
 
@@ -179,6 +180,9 @@ class OpenAICompatibleProvider(BaseLLMProvider):
                 'content':message.content
             }
 
+            if message.reasoning_content:
+                item['reasoning_content'] = message.reasoning_content
+
             if message.tool_calls:
                 item['tool_calls']=message.tool_calls
 
@@ -193,6 +197,9 @@ class OpenAICompatibleProvider(BaseLLMProvider):
             "temperature": request.temperature,
             "stream": stream,
         }
+
+        if request.thinking is not None:
+            payload["thinking"] = {"type": "enabled" if request.thinking else "disabled"}
 
         if request.max_tokens is not None:
             payload["max_tokens"] = request.max_tokens
@@ -224,7 +231,8 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         return LLMResponse(
             provider=self.provider_name,
             model=data.get("model", self.default_model),
-            content=message.get("content", ""),
+            content=message.get("content") or "",
+            reasoning_content=message.get("reasoning_content") or "",
             usage=usage,
             tool_calls=tool_calls,
             finish_reason=choice.get("finish_reason"),
@@ -255,7 +263,8 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         return parsed_tool_calls
 
     def _parse_stream_chunk(self, data: dict) -> LLMStreamChunk:
-        choice = data["choices"][0]
+        choices = data["choices"]
+        choice = choices[0] if choices else {}
         delta = choice.get("delta") or {}
         usage_data = data.get("usage")
 
@@ -272,7 +281,17 @@ class OpenAICompatibleProvider(BaseLLMProvider):
             provider=self.provider_name,
             model=data.get("model", self.default_model),
             content=delta.get("content") or "",
+            reasoning_content=delta.get("reasoning_content") or "",
             finish_reason=choice.get("finish_reason"),
             usage=usage,
             raw_chunk=data,
+            tool_calls=[
+                LLMToolCallDelta(
+                    index=item["index"],
+                    id=item.get("id") or "",
+                    name=(item.get("function") or {}).get("name") or "",
+                    arguments=(item.get("function") or {}).get("arguments") or "",
+                )
+                for item in delta.get("tool_calls") or []
+            ],
         )

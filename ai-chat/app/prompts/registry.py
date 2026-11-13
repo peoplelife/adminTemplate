@@ -1,4 +1,5 @@
 from app.prompts.base import PromptScenario, PromptTemplate
+from app.prompts.page_generation import PAGE_GENERATION_PROMPT, PAGE_GENERATION_PROMPT_V2
 from app.prompts.rag import RAG_QA_PROMPT_V1
 from app.prompts.rag_evaluation import RAG_EVALUATION_PROMPT
 
@@ -42,3 +43,5 @@ prompt_registry = PromptRegistry()
 
 prompt_registry.register(RAG_QA_PROMPT_V1)
 prompt_registry.register(RAG_EVALUATION_PROMPT)
+prompt_registry.register(PAGE_GENERATION_PROMPT)
+prompt_registry.register(PAGE_GENERATION_PROMPT_V2)

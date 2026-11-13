@@ -1,0 +1,73 @@
+.message-sources {
+	margin-top: 14px;
+	padding-top: 10px;
+	border-top: 1px solid #e3eeeb;
+}
+
+.message-sources__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #607773;
+	font-size: 12px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.message-sources__toggle:hover {
+	color: #0a9e8d;
+}
+
+.message-sources__toggle .el-icon {
+	font-size: 14px;
+}
+
+.message-sources__list {
+	margin-top: 8px;
+}
+
+.message-source + .message-source {
+	margin-top: 8px;
+}
+
+.message-source__name,
+.message-source__meta,
+.message-source__section,
+.message-source__excerpt {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.message-source__name {
+	color: #2a6d62;
+	font-weight: 600;
+}
+
+.message-source__match {
+	margin-top: 6px;
+	padding-left: 10px;
+	border-left: 2px solid #d6e7e3;
+}
+
+.message-source__match + .message-source__match {
+	margin-top: 8px;
+}
+
+.message-source__meta {
+	color: #4f6964;
+	font-weight: 600;
+}
+
+.message-source__section {
+	margin-top: 2px;
+	color: #59716d;
+}
+
+.message-source__excerpt {
+	margin-top: 3px;
+	color: #728581;
+}

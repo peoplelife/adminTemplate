@@ -62,7 +62,7 @@ export const Form = defineComponent({
 			},
 			{ deep: true }
 		);
-		expose({ reset, getModel, setModel });
+		expose({ reset, getModel, setModel, validate: () => formRef.value.validate() });
 		return () => (
 			<ElForm {...attrs.value} ref={formRef} model={localModel.value}>
 				<ElRow gutter={20}>

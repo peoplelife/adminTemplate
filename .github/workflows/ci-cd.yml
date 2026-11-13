@@ -112,6 +112,8 @@ jobs:
           file: ./ai-chat/Dockerfile
           platforms: linux/amd64
           push: true
+          build-contexts: |
+            template-docs=./frontend/docs
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/admin-template-python:${{ env.IMAGE_TAG }}
 
   deploy:

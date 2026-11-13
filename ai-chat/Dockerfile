@@ -16,6 +16,8 @@ COPY --from=build /app/.venv /app/.venv
 COPY --chown=app:app app ./app
 COPY --chown=app:app migrations ./migrations
 COPY --chown=app:app alembic.ini ./
+# The named build context is the real frontend component documentation.
+COPY --from=template-docs --chown=app:app / /app/template-docs/
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

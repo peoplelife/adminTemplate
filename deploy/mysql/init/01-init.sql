@@ -106,6 +106,7 @@ INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sor
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_1778841163540_899', '-1', 'AI', '/ai', '', 'Files', '3', '0', '0', 'M', '', '1');
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_1778841682940_869', 'menu_1778841163540_899', '知识库问答', '/ai/intelligentConversation', '/ai/intelligentConversation/index', '', '0', '0', '0', 'C', '', '1');
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_ai_rag_evaluation', 'menu_1778841163540_899', '知识库检索评测', '/ai/rag-evaluation', '/ai/ragEvaluation/index', 'DataAnalysis', '1', '0', '0', 'C', NULL, '1');
+INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_ai_page_agent', 'menu_1778841163540_899', '页面生成', '/ai/page-agent', '/ai/pageAgent/index', 'MagicStick', '2', '0', '0', 'C', NULL, '1');
 
 INSERT INTO `users` (`username`, `password`, `nickname`, `status`)
 VALUES ('admin', 'admin123', '超级管理员', 1);
@@ -159,4 +160,4 @@ FROM users u JOIN user_roles ur ON ur.user_id = u.id JOIN roles r ON r.id = ur.r
 WHERE u.status = 1 AND u.deleted_at IS NULL AND r.status = 1 AND r.code = 'super_admin';
 
 SELECT menu_id, parent_id, name, path, component
-FROM menus WHERE path IN ('/ai', '/ai/intelligentConversation', '/ai/rag-evaluation') ORDER BY sort;
+FROM menus WHERE path IN ('/ai', '/ai/intelligentConversation', '/ai/rag-evaluation', '/ai/page-agent') ORDER BY sort;

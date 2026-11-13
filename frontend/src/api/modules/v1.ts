@@ -26,7 +26,7 @@ export type Request<
   requestConfig: TRequestConfig
 }
 
-const mockUrl_0_0_0_1 = 'http://127.0.0.1:65259/mock/0' as any
+const mockUrl_0_0_0_1 = 'http://127.0.0.1:51423/mock/0' as any
 const devUrl_0_0_0_1 = '' as any
 const prodUrl_0_0_0_1 = '' as any
 const dataKey_0_0_0_1 = 'data' as any
@@ -132,7 +132,7 @@ export interface IGetV1UsersRes {
  */
 type GetV1UsersRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/users',
@@ -270,7 +270,7 @@ export interface IPostV1UsersRes {
  * @请求头 `POST /v1/users`
  */
 type PostV1UsersRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/users', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/users', 'data', string, string, false>
 >
 
 /**
@@ -372,7 +372,7 @@ export interface IGetV1UsersByIdRes {
  * @请求头 `GET /v1/users/{id}`
  */
 type GetV1UsersByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -441,7 +441,7 @@ export type IDeleteV1UsersByIdRes = any
  * @请求头 `DELETE /v1/users/{id}`
  */
 type DeleteV1UsersByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -571,7 +571,7 @@ export interface IPatchV1UsersByIdRes {
  * @请求头 `PATCH /v1/users/{id}`
  */
 type PatchV1UsersByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/users/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -645,7 +645,7 @@ export type IGetV1UsersExportRes = any
  */
 type GetV1UsersExportRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/users/export',
@@ -750,7 +750,7 @@ export interface IGetV1MeRes {
  * @请求头 `GET /v1/me`
  */
 type GetV1MeRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/me', 'data', string, string, true>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/me', 'data', string, string, true>
 >
 
 /**
@@ -791,10 +791,723 @@ export const getV1Me = /*#__PURE__*/ (requestData?: IGetV1MeReq, ...args: UserRe
 
 getV1Me.requestConfig = getV1MeRequestConfig
 
-const mockUrl_0_0_0_2 = 'http://127.0.0.1:65259/mock/0' as any
+const mockUrl_0_0_0_2 = 'http://127.0.0.1:51423/mock/0' as any
 const devUrl_0_0_0_2 = '' as any
 const prodUrl_0_0_0_2 = '' as any
 const dataKey_0_0_0_2 = 'data' as any
+
+/**
+ * 接口 重置页面生成工作区 的 **请求类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/reset`
+ */
+export interface IPostV1AiPageAgentResetReq {}
+
+/**
+ * 接口 重置页面生成工作区 的 **返回类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/reset`
+ */
+export interface IPostV1AiPageAgentResetRes {
+  messages: {
+    /**
+     * 消息角色
+     */
+    role: 'user' | 'assistant'
+    /**
+     * 消息内容（用户最多 4000 字符，助手最多 8000 字符）
+     */
+    content: string
+    /**
+     * 模型返回的独立推理内容，与回复正文分开保存
+     */
+    reasoningContent: string
+  }[]
+  /**
+   * 受约束的页面结构描述
+   */
+  pageSpec: {
+    pageKey: string
+    title: string
+    fields: {
+      key: string
+      label: string
+      /**
+       * 字段组件类型
+       */
+      kind: 'input' | 'number' | 'select' | 'radio'
+      required: boolean
+      searchable: boolean
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      /**
+       * 控件默认标量值
+       */
+      defaultValue: string | number | null
+    }[]
+    /**
+     * 页面操作
+     */
+    actions: ('create' | 'edit' | 'delete' | 'detail')[]
+    /**
+     * 表单列数
+     */
+    formColumns: number
+    /**
+     * 受约束的表格配置
+     */
+    table: {
+      border: boolean
+      stripe: boolean
+      size: 'small' | 'default' | 'large'
+      showHeader: boolean
+      height: number | null
+    }
+    /**
+     * 预览分页配置
+     */
+    pagination: {
+      enabled: boolean
+      pageSize: number
+      pageSizes: number[]
+      background: boolean
+    }
+    /**
+     * 预览表单配置
+     */
+    form: {
+      labelPosition: 'left' | 'right' | 'top'
+      labelWidth: number
+      size: 'small' | 'default' | 'large'
+      disabled: boolean
+    }
+    /**
+     * 可选合成数据，最多 100 行；字段值为字符串、数字或 null
+     */
+    sampleData: {}[] | null
+  }
+  /**
+   * 根据 PageSpec 编译出的安全预览数据
+   */
+  preview: {
+    columns: {
+      key: string
+      label: string
+      /**
+       * 组件类型
+       */
+      type: 'input' | 'number' | 'select' | 'radio'
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    filters: {
+      key: string
+      label: string
+      /**
+       * 组件类型
+       */
+      type: 'input' | 'number' | 'select' | 'radio'
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    form: {
+      key: string
+      label: string
+      type: 'input' | 'number' | 'select' | 'radio'
+      required: boolean
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    /**
+     * 页面操作
+     */
+    actions: ('create' | 'edit' | 'delete' | 'detail')[]
+    formColumns: number
+    /**
+     * 合成行；除 id 外键为字段 key，值为标量
+     */
+    rows: {}[]
+    total: number
+  }
+}
+
+/**
+ * 接口 重置页面生成工作区 的 **请求配置的类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/reset`
+ */
+type PostV1AiPageAgentResetRequestConfig = Readonly<
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/ai/page-agent/reset', 'data', string, string, true>
+>
+
+/**
+ * 接口 重置页面生成工作区 的 **请求配置**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/reset`
+ */
+const postV1AiPageAgentResetRequestConfig: PostV1AiPageAgentResetRequestConfig = /*#__PURE__*/ {
+  mockUrl: mockUrl_0_0_0_2,
+  devUrl: devUrl_0_0_0_2,
+  prodUrl: prodUrl_0_0_0_2,
+  path: '/v1/ai/page-agent/reset',
+  method: Method.POST,
+  requestHeaders: {},
+  requestBodyType: RequestBodyType.raw,
+  responseBodyType: ResponseBodyType.json,
+  dataKey: dataKey_0_0_0_2,
+  paramNames: [],
+  queryNames: [],
+  requestDataOptional: true,
+  requestDataJsonSchema: {},
+  responseDataJsonSchema: {},
+  requestFunctionName: 'postV1AiPageAgentReset',
+  queryStringArrayFormat: QueryStringArrayFormat.brackets,
+  extraInfo: {},
+}
+
+/**
+ * 接口 重置页面生成工作区 的 **请求函数**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/reset`
+ */
+export const postV1AiPageAgentReset = /*#__PURE__*/ (
+  requestData?: IPostV1AiPageAgentResetReq,
+  ...args: UserRequestRestArgs
+) => {
+  return request<IPostV1AiPageAgentResetRes>(prepare(postV1AiPageAgentResetRequestConfig, requestData), ...args)
+}
+
+postV1AiPageAgentReset.requestConfig = postV1AiPageAgentResetRequestConfig
+
+/**
+ * 接口 发送页面生成消息 的 **请求类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/messages/stream`
+ */
+export interface IPostV1AiPageAgentMessagesStreamReq {
+  /**
+   * 用户对页面的自然语言描述
+   */
+  content: string
+}
+
+/**
+ * 接口 发送页面生成消息 的 **返回类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/messages/stream`
+ */
+export interface IPostV1AiPageAgentMessagesStreamRes {
+  [k: string]: unknown
+}
+
+/**
+ * 接口 发送页面生成消息 的 **请求配置的类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/messages/stream`
+ */
+type PostV1AiPageAgentMessagesStreamRequestConfig = Readonly<
+  RequestConfig<
+    'http://127.0.0.1:51423/mock/0',
+    '',
+    '',
+    '/v1/ai/page-agent/messages/stream',
+    'data',
+    string,
+    string,
+    false
+  >
+>
+
+/**
+ * 接口 发送页面生成消息 的 **请求配置**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/messages/stream`
+ */
+const postV1AiPageAgentMessagesStreamRequestConfig: PostV1AiPageAgentMessagesStreamRequestConfig = /*#__PURE__*/ {
+  mockUrl: mockUrl_0_0_0_2,
+  devUrl: devUrl_0_0_0_2,
+  prodUrl: prodUrl_0_0_0_2,
+  path: '/v1/ai/page-agent/messages/stream',
+  method: Method.POST,
+  requestHeaders: {},
+  requestBodyType: RequestBodyType.json,
+  responseBodyType: ResponseBodyType.json,
+  dataKey: dataKey_0_0_0_2,
+  paramNames: [],
+  queryNames: [],
+  requestDataOptional: false,
+  requestDataJsonSchema: {},
+  responseDataJsonSchema: {},
+  requestFunctionName: 'postV1AiPageAgentMessagesStream',
+  queryStringArrayFormat: QueryStringArrayFormat.brackets,
+  extraInfo: {},
+}
+
+/**
+ * 接口 发送页面生成消息 的 **请求函数**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `POST /v1/ai/page-agent/messages/stream`
+ */
+export const postV1AiPageAgentMessagesStream = /*#__PURE__*/ (
+  requestData: IPostV1AiPageAgentMessagesStreamReq,
+  ...args: UserRequestRestArgs
+) => {
+  return request<IPostV1AiPageAgentMessagesStreamRes>(
+    prepare(postV1AiPageAgentMessagesStreamRequestConfig, requestData),
+    ...args,
+  )
+}
+
+postV1AiPageAgentMessagesStream.requestConfig = postV1AiPageAgentMessagesStreamRequestConfig
+
+/**
+ * 接口 恢复页面生成工作区 的 **请求类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `GET /v1/ai/page-agent/workspace`
+ */
+export interface IGetV1AiPageAgentWorkspaceReq {}
+
+/**
+ * 接口 恢复页面生成工作区 的 **返回类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `GET /v1/ai/page-agent/workspace`
+ */
+export interface IGetV1AiPageAgentWorkspaceRes {
+  messages: {
+    /**
+     * 消息角色
+     */
+    role: 'user' | 'assistant'
+    /**
+     * 消息内容（用户最多 4000 字符，助手最多 8000 字符）
+     */
+    content: string
+    /**
+     * 模型返回的独立推理内容，与回复正文分开保存
+     */
+    reasoningContent: string
+  }[]
+  /**
+   * 受约束的页面结构描述
+   */
+  pageSpec: {
+    pageKey: string
+    title: string
+    fields: {
+      key: string
+      label: string
+      /**
+       * 字段组件类型
+       */
+      kind: 'input' | 'number' | 'select' | 'radio'
+      required: boolean
+      searchable: boolean
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      /**
+       * 控件默认标量值
+       */
+      defaultValue: string | number | null
+    }[]
+    /**
+     * 页面操作
+     */
+    actions: ('create' | 'edit' | 'delete' | 'detail')[]
+    /**
+     * 表单列数
+     */
+    formColumns: number
+    /**
+     * 受约束的表格配置
+     */
+    table: {
+      border: boolean
+      stripe: boolean
+      size: 'small' | 'default' | 'large'
+      showHeader: boolean
+      height: number | null
+    }
+    /**
+     * 预览分页配置
+     */
+    pagination: {
+      enabled: boolean
+      pageSize: number
+      pageSizes: number[]
+      background: boolean
+    }
+    /**
+     * 预览表单配置
+     */
+    form: {
+      labelPosition: 'left' | 'right' | 'top'
+      labelWidth: number
+      size: 'small' | 'default' | 'large'
+      disabled: boolean
+    }
+    /**
+     * 可选合成数据，最多 100 行；字段值为字符串、数字或 null
+     */
+    sampleData: {}[] | null
+  }
+  /**
+   * 根据 PageSpec 编译出的安全预览数据
+   */
+  preview: {
+    columns: {
+      key: string
+      label: string
+      /**
+       * 组件类型
+       */
+      type: 'input' | 'number' | 'select' | 'radio'
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    filters: {
+      key: string
+      label: string
+      /**
+       * 组件类型
+       */
+      type: 'input' | 'number' | 'select' | 'radio'
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    form: {
+      key: string
+      label: string
+      type: 'input' | 'number' | 'select' | 'radio'
+      required: boolean
+      options: {
+        label: string
+        value: string
+        /**
+         * 可选颜色
+         */
+        color: string | null
+      }[]
+      /**
+       * 预览列配置
+       */
+      column: {
+        width: number | null
+        minWidth: number
+        align: 'left' | 'center' | 'right'
+        fixed: ('left' | 'right') | null
+        sortable: boolean
+        showOverflowTooltip: boolean
+      }
+      /**
+       * 已有控件支持的声明式属性
+       */
+      attrs: {
+        placeholder: string | null
+        clearable: boolean
+        disabled: boolean
+        maxlength: number | null
+        min: number | null
+        max: number | null
+        step: number | null
+        precision: number | null
+      }
+      defaultValue: string | number | null
+    }[]
+    /**
+     * 页面操作
+     */
+    actions: ('create' | 'edit' | 'delete' | 'detail')[]
+    formColumns: number
+    /**
+     * 合成行；除 id 外键为字段 key，值为标量
+     */
+    rows: {}[]
+    total: number
+  }
+}
+
+/**
+ * 接口 恢复页面生成工作区 的 **请求配置的类型**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `GET /v1/ai/page-agent/workspace`
+ */
+type GetV1AiPageAgentWorkspaceRequestConfig = Readonly<
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/ai/page-agent/workspace', 'data', string, string, true>
+>
+
+/**
+ * 接口 恢复页面生成工作区 的 **请求配置**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `GET /v1/ai/page-agent/workspace`
+ */
+const getV1AiPageAgentWorkspaceRequestConfig: GetV1AiPageAgentWorkspaceRequestConfig = /*#__PURE__*/ {
+  mockUrl: mockUrl_0_0_0_2,
+  devUrl: devUrl_0_0_0_2,
+  prodUrl: prodUrl_0_0_0_2,
+  path: '/v1/ai/page-agent/workspace',
+  method: Method.GET,
+  requestHeaders: {},
+  requestBodyType: RequestBodyType.query,
+  responseBodyType: ResponseBodyType.json,
+  dataKey: dataKey_0_0_0_2,
+  paramNames: [],
+  queryNames: [],
+  requestDataOptional: true,
+  requestDataJsonSchema: {},
+  responseDataJsonSchema: {},
+  requestFunctionName: 'getV1AiPageAgentWorkspace',
+  queryStringArrayFormat: QueryStringArrayFormat.brackets,
+  extraInfo: {},
+}
+
+/**
+ * 接口 恢复页面生成工作区 的 **请求函数**
+ *
+ * @分类 AI 页面生成
+ * @请求头 `GET /v1/ai/page-agent/workspace`
+ */
+export const getV1AiPageAgentWorkspace = /*#__PURE__*/ (
+  requestData?: IGetV1AiPageAgentWorkspaceReq,
+  ...args: UserRequestRestArgs
+) => {
+  return request<IGetV1AiPageAgentWorkspaceRes>(prepare(getV1AiPageAgentWorkspaceRequestConfig, requestData), ...args)
+}
+
+getV1AiPageAgentWorkspace.requestConfig = getV1AiPageAgentWorkspaceRequestConfig
+
+const mockUrl_0_0_0_3 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_3 = '' as any
+const prodUrl_0_0_0_3 = '' as any
+const dataKey_0_0_0_3 = 'data' as any
 
 /**
  * 接口 查询知识库列表 的 **请求类型**
@@ -841,7 +1554,7 @@ export interface IGetV1AiKnowledgeBasesRes {
  */
 type GetV1AiKnowledgeBasesRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases',
@@ -859,15 +1572,15 @@ type GetV1AiKnowledgeBasesRequestConfig = Readonly<
  * @请求头 `GET /v1/ai/knowledge-bases`
  */
 const getV1AiKnowledgeBasesRequestConfig: GetV1AiKnowledgeBasesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_2,
-  devUrl: devUrl_0_0_0_2,
-  prodUrl: prodUrl_0_0_0_2,
+  mockUrl: mockUrl_0_0_0_3,
+  devUrl: devUrl_0_0_0_3,
+  prodUrl: prodUrl_0_0_0_3,
   path: '/v1/ai/knowledge-bases',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_2,
+  dataKey: dataKey_0_0_0_3,
   paramNames: [],
   queryNames: ['page', 'pageSize'],
   requestDataOptional: false,
@@ -921,7 +1634,7 @@ export interface IPostV1AiKnowledgeBasesRes {
  * @请求头 `POST /v1/ai/knowledge-bases`
  */
 type PostV1AiKnowledgeBasesRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/ai/knowledge-bases', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/ai/knowledge-bases', 'data', string, string, false>
 >
 
 /**
@@ -931,15 +1644,15 @@ type PostV1AiKnowledgeBasesRequestConfig = Readonly<
  * @请求头 `POST /v1/ai/knowledge-bases`
  */
 const postV1AiKnowledgeBasesRequestConfig: PostV1AiKnowledgeBasesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_2,
-  devUrl: devUrl_0_0_0_2,
-  prodUrl: prodUrl_0_0_0_2,
+  mockUrl: mockUrl_0_0_0_3,
+  devUrl: devUrl_0_0_0_3,
+  prodUrl: prodUrl_0_0_0_3,
   path: '/v1/ai/knowledge-bases',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_2,
+  dataKey: dataKey_0_0_0_3,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -995,7 +1708,7 @@ export interface IPostV1AiKnowledgeBasesByKnowledgeBaseIdRetrievalPreviewRes {
  */
 type PostV1AiKnowledgeBasesByKnowledgeBaseIdRetrievalPreviewRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/retrieval-preview',
@@ -1014,15 +1727,15 @@ type PostV1AiKnowledgeBasesByKnowledgeBaseIdRetrievalPreviewRequestConfig = Read
  */
 const postV1AiKnowledgeBasesByKnowledgeBaseIdRetrievalPreviewRequestConfig: PostV1AiKnowledgeBasesByKnowledgeBaseIdRetrievalPreviewRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/retrieval-preview',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1098,7 +1811,7 @@ export interface IGetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRes {
  */
 type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents',
@@ -1117,15 +1830,15 @@ type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig = Readonly<
  */
 const getV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig: GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId'],
     queryNames: ['page', 'pageSize'],
     requestDataOptional: false,
@@ -1195,7 +1908,7 @@ export interface IPostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRes {
  */
 type PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents',
@@ -1214,15 +1927,15 @@ type PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig = Readonly<
  */
 const postV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig: PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1292,7 +2005,7 @@ export interface IPostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRe
  */
 type PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdReindexRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/reindex',
@@ -1311,15 +2024,15 @@ type PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdReindexRequestC
  */
 const postV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdReindexRequestConfig: PostV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdReindexRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/reindex',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.raw,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId', 'documentId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1391,7 +2104,7 @@ export interface IGetV1AiConversationsRes {
  */
 type GetV1AiConversationsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations',
@@ -1409,15 +2122,15 @@ type GetV1AiConversationsRequestConfig = Readonly<
  * @请求头 `GET /v1/ai/conversations`
  */
 const getV1AiConversationsRequestConfig: GetV1AiConversationsRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_2,
-  devUrl: devUrl_0_0_0_2,
-  prodUrl: prodUrl_0_0_0_2,
+  mockUrl: mockUrl_0_0_0_3,
+  devUrl: devUrl_0_0_0_3,
+  prodUrl: prodUrl_0_0_0_3,
   path: '/v1/ai/conversations',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_2,
+  dataKey: dataKey_0_0_0_3,
   paramNames: [],
   queryNames: ['page', 'pageSize', 'mode', 'knowledgeBaseId'],
   requestDataOptional: false,
@@ -1478,7 +2191,7 @@ export interface IPostV1AiConversationsRes {
  * @请求头 `POST /v1/ai/conversations`
  */
 type PostV1AiConversationsRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/ai/conversations', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/ai/conversations', 'data', string, string, false>
 >
 
 /**
@@ -1488,15 +2201,15 @@ type PostV1AiConversationsRequestConfig = Readonly<
  * @请求头 `POST /v1/ai/conversations`
  */
 const postV1AiConversationsRequestConfig: PostV1AiConversationsRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_2,
-  devUrl: devUrl_0_0_0_2,
-  prodUrl: prodUrl_0_0_0_2,
+  mockUrl: mockUrl_0_0_0_3,
+  devUrl: devUrl_0_0_0_3,
+  prodUrl: prodUrl_0_0_0_3,
   path: '/v1/ai/conversations',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_2,
+  dataKey: dataKey_0_0_0_3,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -1552,7 +2265,7 @@ export interface IPostV1AiConversationsByConversationIdMessagesStreamRes {
  */
 type PostV1AiConversationsByConversationIdMessagesStreamRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations/{conversationId}/messages/stream',
@@ -1571,15 +2284,15 @@ type PostV1AiConversationsByConversationIdMessagesStreamRequestConfig = Readonly
  */
 const postV1AiConversationsByConversationIdMessagesStreamRequestConfig: PostV1AiConversationsByConversationIdMessagesStreamRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/conversations/{conversationId}/messages/stream',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['conversationId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1643,7 +2356,7 @@ export interface IGetV1AiConversationsByConversationIdRes {
  */
 type GetV1AiConversationsByConversationIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations/{conversationId}',
@@ -1662,15 +2375,15 @@ type GetV1AiConversationsByConversationIdRequestConfig = Readonly<
  */
 const getV1AiConversationsByConversationIdRequestConfig: GetV1AiConversationsByConversationIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/conversations/{conversationId}',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['conversationId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1725,7 +2438,7 @@ export type IDeleteV1AiConversationsByConversationIdRes = any
  */
 type DeleteV1AiConversationsByConversationIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations/{conversationId}',
@@ -1744,15 +2457,15 @@ type DeleteV1AiConversationsByConversationIdRequestConfig = Readonly<
  */
 const deleteV1AiConversationsByConversationIdRequestConfig: DeleteV1AiConversationsByConversationIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/conversations/{conversationId}',
     method: Method.DELETE,
     requestHeaders: {},
     requestBodyType: RequestBodyType.raw,
     responseBodyType: ResponseBodyType.raw,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['conversationId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1817,7 +2530,7 @@ export interface IPatchV1AiConversationsByConversationIdRes {
  */
 type PatchV1AiConversationsByConversationIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations/{conversationId}',
@@ -1836,15 +2549,15 @@ type PatchV1AiConversationsByConversationIdRequestConfig = Readonly<
  */
 const patchV1AiConversationsByConversationIdRequestConfig: PatchV1AiConversationsByConversationIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/conversations/{conversationId}',
     method: Method.PATCH,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['conversationId'],
     queryNames: [],
     requestDataOptional: false,
@@ -1912,7 +2625,7 @@ export interface IGetV1AiKnowledgeBasesByKnowledgeBaseIdRes {
  */
 type GetV1AiKnowledgeBasesByKnowledgeBaseIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}',
@@ -1931,15 +2644,15 @@ type GetV1AiKnowledgeBasesByKnowledgeBaseIdRequestConfig = Readonly<
  */
 const getV1AiKnowledgeBasesByKnowledgeBaseIdRequestConfig: GetV1AiKnowledgeBasesByKnowledgeBaseIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId'],
     queryNames: [],
     requestDataOptional: false,
@@ -2008,7 +2721,7 @@ export interface IGetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRes
  */
 type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}',
@@ -2027,15 +2740,15 @@ type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRequestConfig = 
  */
 const getV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRequestConfig: GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId', 'documentId'],
     queryNames: [],
     requestDataOptional: false,
@@ -2092,7 +2805,7 @@ export type IGetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdContentR
  */
 type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdContentRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/content',
@@ -2111,15 +2824,15 @@ type GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdContentRequestCo
  */
 const getV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdContentRequestConfig: GetV1AiKnowledgeBasesByKnowledgeBaseIdDocumentsByDocumentIdContentRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/content',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['knowledgeBaseId', 'documentId'],
     queryNames: [],
     requestDataOptional: false,
@@ -2197,7 +2910,7 @@ export interface IGetV1AiConversationsByConversationIdMessagesRes {
  */
 type GetV1AiConversationsByConversationIdMessagesRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/conversations/{conversationId}/messages',
@@ -2216,15 +2929,15 @@ type GetV1AiConversationsByConversationIdMessagesRequestConfig = Readonly<
  */
 const getV1AiConversationsByConversationIdMessagesRequestConfig: GetV1AiConversationsByConversationIdMessagesRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_2,
-    devUrl: devUrl_0_0_0_2,
-    prodUrl: prodUrl_0_0_0_2,
+    mockUrl: mockUrl_0_0_0_3,
+    devUrl: devUrl_0_0_0_3,
+    prodUrl: prodUrl_0_0_0_3,
     path: '/v1/ai/conversations/{conversationId}/messages',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_2,
+    dataKey: dataKey_0_0_0_3,
     paramNames: ['conversationId'],
     queryNames: ['beforeSeq', 'limit'],
     requestDataOptional: false,
@@ -2253,10 +2966,10 @@ export const getV1AiConversationsByConversationIdMessages = /*#__PURE__*/ (
 
 getV1AiConversationsByConversationIdMessages.requestConfig = getV1AiConversationsByConversationIdMessagesRequestConfig
 
-const mockUrl_0_0_0_3 = 'http://127.0.0.1:65259/mock/0' as any
-const devUrl_0_0_0_3 = '' as any
-const prodUrl_0_0_0_3 = '' as any
-const dataKey_0_0_0_3 = 'data' as any
+const mockUrl_0_0_0_4 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_4 = '' as any
+const prodUrl_0_0_0_4 = '' as any
+const dataKey_0_0_0_4 = 'data' as any
 
 /**
  * 接口 查询菜单列表 的 **请求类型**
@@ -2344,7 +3057,7 @@ export interface IGetV1MenusRes {
  * @请求头 `GET /v1/menus`
  */
 type GetV1MenusRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/menus', 'data', string, 'menuName' | 'menuType', false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/menus', 'data', string, 'menuName' | 'menuType', false>
 >
 
 /**
@@ -2354,15 +3067,15 @@ type GetV1MenusRequestConfig = Readonly<
  * @请求头 `GET /v1/menus`
  */
 const getV1MenusRequestConfig: GetV1MenusRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_3,
-  devUrl: devUrl_0_0_0_3,
-  prodUrl: prodUrl_0_0_0_3,
+  mockUrl: mockUrl_0_0_0_4,
+  devUrl: devUrl_0_0_0_4,
+  prodUrl: prodUrl_0_0_0_4,
   path: '/v1/menus',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_3,
+  dataKey: dataKey_0_0_0_4,
   paramNames: [],
   queryNames: ['menuName', 'menuType'],
   requestDataOptional: false,
@@ -2498,7 +3211,7 @@ export interface IPostV1MenusRes {
  * @请求头 `POST /v1/menus`
  */
 type PostV1MenusRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/menus', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/menus', 'data', string, string, false>
 >
 
 /**
@@ -2508,15 +3221,15 @@ type PostV1MenusRequestConfig = Readonly<
  * @请求头 `POST /v1/menus`
  */
 const postV1MenusRequestConfig: PostV1MenusRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_3,
-  devUrl: devUrl_0_0_0_3,
-  prodUrl: prodUrl_0_0_0_3,
+  mockUrl: mockUrl_0_0_0_4,
+  devUrl: devUrl_0_0_0_4,
+  prodUrl: prodUrl_0_0_0_4,
   path: '/v1/menus',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_3,
+  dataKey: dataKey_0_0_0_4,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -2567,7 +3280,7 @@ export type IDeleteV1MenusByIdRes = any
  * @请求头 `DELETE /v1/menus/{id}`
  */
 type DeleteV1MenusByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/menus/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/menus/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -2577,15 +3290,15 @@ type DeleteV1MenusByIdRequestConfig = Readonly<
  * @请求头 `DELETE /v1/menus/{id}`
  */
 const deleteV1MenusByIdRequestConfig: DeleteV1MenusByIdRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_3,
-  devUrl: devUrl_0_0_0_3,
-  prodUrl: prodUrl_0_0_0_3,
+  mockUrl: mockUrl_0_0_0_4,
+  devUrl: devUrl_0_0_0_4,
+  prodUrl: prodUrl_0_0_0_4,
   path: '/v1/menus/{id}',
   method: Method.DELETE,
   requestHeaders: {},
   requestBodyType: RequestBodyType.raw,
   responseBodyType: ResponseBodyType.raw,
-  dataKey: dataKey_0_0_0_3,
+  dataKey: dataKey_0_0_0_4,
   paramNames: ['id'],
   queryNames: [],
   requestDataOptional: false,
@@ -2729,7 +3442,7 @@ export interface IPatchV1MenusByIdRes {
  * @请求头 `PATCH /v1/menus/{id}`
  */
 type PatchV1MenusByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/menus/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/menus/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -2739,15 +3452,15 @@ type PatchV1MenusByIdRequestConfig = Readonly<
  * @请求头 `PATCH /v1/menus/{id}`
  */
 const patchV1MenusByIdRequestConfig: PatchV1MenusByIdRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_3,
-  devUrl: devUrl_0_0_0_3,
-  prodUrl: prodUrl_0_0_0_3,
+  mockUrl: mockUrl_0_0_0_4,
+  devUrl: devUrl_0_0_0_4,
+  prodUrl: prodUrl_0_0_0_4,
   path: '/v1/menus/{id}',
   method: Method.PATCH,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_3,
+  dataKey: dataKey_0_0_0_4,
   paramNames: ['id'],
   queryNames: [],
   requestDataOptional: false,
@@ -2847,7 +3560,7 @@ export interface IGetV1MeMenusRes {
  * @请求头 `GET /v1/me/menus`
  */
 type GetV1MeMenusRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/me/menus', 'data', string, string, true>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/me/menus', 'data', string, string, true>
 >
 
 /**
@@ -2857,15 +3570,15 @@ type GetV1MeMenusRequestConfig = Readonly<
  * @请求头 `GET /v1/me/menus`
  */
 const getV1MeMenusRequestConfig: GetV1MeMenusRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_3,
-  devUrl: devUrl_0_0_0_3,
-  prodUrl: prodUrl_0_0_0_3,
+  mockUrl: mockUrl_0_0_0_4,
+  devUrl: devUrl_0_0_0_4,
+  prodUrl: prodUrl_0_0_0_4,
   path: '/v1/me/menus',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_3,
+  dataKey: dataKey_0_0_0_4,
   paramNames: [],
   queryNames: [],
   requestDataOptional: true,
@@ -2888,10 +3601,10 @@ export const getV1MeMenus = /*#__PURE__*/ (requestData?: IGetV1MeMenusReq, ...ar
 
 getV1MeMenus.requestConfig = getV1MeMenusRequestConfig
 
-const mockUrl_0_0_0_4 = 'http://127.0.0.1:65259/mock/0' as any
-const devUrl_0_0_0_4 = '' as any
-const prodUrl_0_0_0_4 = '' as any
-const dataKey_0_0_0_4 = 'data' as any
+const mockUrl_0_0_0_5 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_5 = '' as any
+const prodUrl_0_0_0_5 = '' as any
+const dataKey_0_0_0_5 = 'data' as any
 
 /**
  * 接口 退出登录 的 **请求类型**
@@ -2918,7 +3631,7 @@ export interface IPostV1AuthLogoutRes {
  * @请求头 `POST /v1/auth/logout`
  */
 type PostV1AuthLogoutRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/auth/logout', 'data', string, string, true>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/auth/logout', 'data', string, string, true>
 >
 
 /**
@@ -2928,15 +3641,15 @@ type PostV1AuthLogoutRequestConfig = Readonly<
  * @请求头 `POST /v1/auth/logout`
  */
 const postV1AuthLogoutRequestConfig: PostV1AuthLogoutRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_4,
-  devUrl: devUrl_0_0_0_4,
-  prodUrl: prodUrl_0_0_0_4,
+  mockUrl: mockUrl_0_0_0_5,
+  devUrl: devUrl_0_0_0_5,
+  prodUrl: prodUrl_0_0_0_5,
   path: '/v1/auth/logout',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.raw,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_4,
+  dataKey: dataKey_0_0_0_5,
   paramNames: [],
   queryNames: [],
   requestDataOptional: true,
@@ -3000,7 +3713,7 @@ export interface IPostV1AuthLoginRes {
  * @请求头 `POST /v1/auth/login`
  */
 type PostV1AuthLoginRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/auth/login', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/auth/login', 'data', string, string, false>
 >
 
 /**
@@ -3010,15 +3723,15 @@ type PostV1AuthLoginRequestConfig = Readonly<
  * @请求头 `POST /v1/auth/login`
  */
 const postV1AuthLoginRequestConfig: PostV1AuthLoginRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_4,
-  devUrl: devUrl_0_0_0_4,
-  prodUrl: prodUrl_0_0_0_4,
+  mockUrl: mockUrl_0_0_0_5,
+  devUrl: devUrl_0_0_0_5,
+  prodUrl: prodUrl_0_0_0_5,
   path: '/v1/auth/login',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_4,
+  dataKey: dataKey_0_0_0_5,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -3041,10 +3754,10 @@ export const postV1AuthLogin = /*#__PURE__*/ (requestData: IPostV1AuthLoginReq, 
 
 postV1AuthLogin.requestConfig = postV1AuthLoginRequestConfig
 
-const mockUrl_0_0_0_5 = 'http://127.0.0.1:65259/mock/0' as any
-const devUrl_0_0_0_5 = '' as any
-const prodUrl_0_0_0_5 = '' as any
-const dataKey_0_0_0_5 = 'data' as any
+const mockUrl_0_0_0_6 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_6 = '' as any
+const prodUrl_0_0_0_6 = '' as any
+const dataKey_0_0_0_6 = 'data' as any
 
 /**
  * 接口 上传单个文件 的 **请求类型**
@@ -3096,7 +3809,7 @@ export interface IPostV1FilesRes {
  * @请求头 `POST /v1/files`
  */
 type PostV1FilesRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/files', 'data', string, 'path', false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/files', 'data', string, 'path', false>
 >
 
 /**
@@ -3106,15 +3819,15 @@ type PostV1FilesRequestConfig = Readonly<
  * @请求头 `POST /v1/files`
  */
 const postV1FilesRequestConfig: PostV1FilesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_5,
-  devUrl: devUrl_0_0_0_5,
-  prodUrl: prodUrl_0_0_0_5,
+  mockUrl: mockUrl_0_0_0_6,
+  devUrl: devUrl_0_0_0_6,
+  prodUrl: prodUrl_0_0_0_6,
   path: '/v1/files',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_5,
+  dataKey: dataKey_0_0_0_6,
   paramNames: [],
   queryNames: ['path'],
   requestDataOptional: false,
@@ -3165,7 +3878,7 @@ export type IDeleteV1FilesRes = any
  * @请求头 `DELETE /v1/files`
  */
 type DeleteV1FilesRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/files', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/files', 'data', string, string, false>
 >
 
 /**
@@ -3175,15 +3888,15 @@ type DeleteV1FilesRequestConfig = Readonly<
  * @请求头 `DELETE /v1/files`
  */
 const deleteV1FilesRequestConfig: DeleteV1FilesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_5,
-  devUrl: devUrl_0_0_0_5,
-  prodUrl: prodUrl_0_0_0_5,
+  mockUrl: mockUrl_0_0_0_6,
+  devUrl: devUrl_0_0_0_6,
+  prodUrl: prodUrl_0_0_0_6,
   path: '/v1/files',
   method: Method.DELETE,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.raw,
-  dataKey: dataKey_0_0_0_5,
+  dataKey: dataKey_0_0_0_6,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -3256,7 +3969,7 @@ export type IPostV1FilesBatchRes = {
  * @请求头 `POST /v1/files/batch`
  */
 type PostV1FilesBatchRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/files/batch', 'data', string, 'path', false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/files/batch', 'data', string, 'path', false>
 >
 
 /**
@@ -3266,15 +3979,15 @@ type PostV1FilesBatchRequestConfig = Readonly<
  * @请求头 `POST /v1/files/batch`
  */
 const postV1FilesBatchRequestConfig: PostV1FilesBatchRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_5,
-  devUrl: devUrl_0_0_0_5,
-  prodUrl: prodUrl_0_0_0_5,
+  mockUrl: mockUrl_0_0_0_6,
+  devUrl: devUrl_0_0_0_6,
+  prodUrl: prodUrl_0_0_0_6,
   path: '/v1/files/batch',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_5,
+  dataKey: dataKey_0_0_0_6,
   paramNames: [],
   queryNames: ['path'],
   requestDataOptional: false,
@@ -3297,10 +4010,10 @@ export const postV1FilesBatch = /*#__PURE__*/ (requestData: IPostV1FilesBatchReq
 
 postV1FilesBatch.requestConfig = postV1FilesBatchRequestConfig
 
-const mockUrl_0_0_0_6 = 'http://127.0.0.1:65259/mock/0' as any
-const devUrl_0_0_0_6 = '' as any
-const prodUrl_0_0_0_6 = '' as any
-const dataKey_0_0_0_6 = 'data' as any
+const mockUrl_0_0_0_7 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_7 = '' as any
+const prodUrl_0_0_0_7 = '' as any
+const dataKey_0_0_0_7 = 'data' as any
 
 /**
  * 接口 分页查询角色 的 **请求类型**
@@ -3402,7 +4115,7 @@ export interface IGetV1RolesRes {
  */
 type GetV1RolesRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/roles',
@@ -3420,15 +4133,15 @@ type GetV1RolesRequestConfig = Readonly<
  * @请求头 `GET /v1/roles`
  */
 const getV1RolesRequestConfig: GetV1RolesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_6,
-  devUrl: devUrl_0_0_0_6,
-  prodUrl: prodUrl_0_0_0_6,
+  mockUrl: mockUrl_0_0_0_7,
+  devUrl: devUrl_0_0_0_7,
+  prodUrl: prodUrl_0_0_0_7,
   path: '/v1/roles',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_6,
+  dataKey: dataKey_0_0_0_7,
   paramNames: [],
   queryNames: ['page', 'pageSize', 'name', 'status'],
   requestDataOptional: false,
@@ -3528,7 +4241,7 @@ export interface IPostV1RolesRes {
  * @请求头 `POST /v1/roles`
  */
 type PostV1RolesRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/roles', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/roles', 'data', string, string, false>
 >
 
 /**
@@ -3538,15 +4251,15 @@ type PostV1RolesRequestConfig = Readonly<
  * @请求头 `POST /v1/roles`
  */
 const postV1RolesRequestConfig: PostV1RolesRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_6,
-  devUrl: devUrl_0_0_0_6,
-  prodUrl: prodUrl_0_0_0_6,
+  mockUrl: mockUrl_0_0_0_7,
+  devUrl: devUrl_0_0_0_7,
+  prodUrl: prodUrl_0_0_0_7,
   path: '/v1/roles',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_6,
+  dataKey: dataKey_0_0_0_7,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -3630,7 +4343,7 @@ export interface IGetV1RolesByIdRes {
  * @请求头 `GET /v1/roles/{id}`
  */
 type GetV1RolesByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -3640,15 +4353,15 @@ type GetV1RolesByIdRequestConfig = Readonly<
  * @请求头 `GET /v1/roles/{id}`
  */
 const getV1RolesByIdRequestConfig: GetV1RolesByIdRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_6,
-  devUrl: devUrl_0_0_0_6,
-  prodUrl: prodUrl_0_0_0_6,
+  mockUrl: mockUrl_0_0_0_7,
+  devUrl: devUrl_0_0_0_7,
+  prodUrl: prodUrl_0_0_0_7,
   path: '/v1/roles/{id}',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_6,
+  dataKey: dataKey_0_0_0_7,
   paramNames: ['id'],
   queryNames: [],
   requestDataOptional: false,
@@ -3699,7 +4412,7 @@ export type IDeleteV1RolesByIdRes = any
  * @请求头 `DELETE /v1/roles/{id}`
  */
 type DeleteV1RolesByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -3709,15 +4422,15 @@ type DeleteV1RolesByIdRequestConfig = Readonly<
  * @请求头 `DELETE /v1/roles/{id}`
  */
 const deleteV1RolesByIdRequestConfig: DeleteV1RolesByIdRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_6,
-  devUrl: devUrl_0_0_0_6,
-  prodUrl: prodUrl_0_0_0_6,
+  mockUrl: mockUrl_0_0_0_7,
+  devUrl: devUrl_0_0_0_7,
+  prodUrl: prodUrl_0_0_0_7,
   path: '/v1/roles/{id}',
   method: Method.DELETE,
   requestHeaders: {},
   requestBodyType: RequestBodyType.raw,
   responseBodyType: ResponseBodyType.raw,
-  dataKey: dataKey_0_0_0_6,
+  dataKey: dataKey_0_0_0_7,
   paramNames: ['id'],
   queryNames: [],
   requestDataOptional: false,
@@ -3821,7 +4534,7 @@ export interface IPatchV1RolesByIdRes {
  * @请求头 `PATCH /v1/roles/{id}`
  */
 type PatchV1RolesByIdRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/roles/{id}', 'data', 'id', string, false>
 >
 
 /**
@@ -3831,15 +4544,15 @@ type PatchV1RolesByIdRequestConfig = Readonly<
  * @请求头 `PATCH /v1/roles/{id}`
  */
 const patchV1RolesByIdRequestConfig: PatchV1RolesByIdRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_6,
-  devUrl: devUrl_0_0_0_6,
-  prodUrl: prodUrl_0_0_0_6,
+  mockUrl: mockUrl_0_0_0_7,
+  devUrl: devUrl_0_0_0_7,
+  prodUrl: prodUrl_0_0_0_7,
   path: '/v1/roles/{id}',
   method: Method.PATCH,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_6,
+  dataKey: dataKey_0_0_0_7,
   paramNames: ['id'],
   queryNames: [],
   requestDataOptional: false,
@@ -3862,10 +4575,10 @@ export const patchV1RolesById = /*#__PURE__*/ (requestData: IPatchV1RolesByIdReq
 
 patchV1RolesById.requestConfig = patchV1RolesByIdRequestConfig
 
-const mockUrl_0_0_0_7 = 'http://127.0.0.1:65259/mock/0' as any
-const devUrl_0_0_0_7 = '' as any
-const prodUrl_0_0_0_7 = '' as any
-const dataKey_0_0_0_7 = 'data' as any
+const mockUrl_0_0_0_8 = 'http://127.0.0.1:51423/mock/0' as any
+const devUrl_0_0_0_8 = '' as any
+const prodUrl_0_0_0_8 = '' as any
+const dataKey_0_0_0_8 = 'data' as any
 
 /**
  * 接口 修改评测集 的 **请求类型**
@@ -3902,7 +4615,7 @@ export interface IPutV1AiEvaluationDatasetsByDatasetIdRes {
  */
 type PutV1AiEvaluationDatasetsByDatasetIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}',
@@ -3921,15 +4634,15 @@ type PutV1AiEvaluationDatasetsByDatasetIdRequestConfig = Readonly<
  */
 const putV1AiEvaluationDatasetsByDatasetIdRequestConfig: PutV1AiEvaluationDatasetsByDatasetIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}',
     method: Method.PUT,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: [],
     requestDataOptional: false,
@@ -3984,7 +4697,7 @@ export type IDeleteV1AiEvaluationDatasetsByDatasetIdRes = any
  */
 type DeleteV1AiEvaluationDatasetsByDatasetIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}',
@@ -4003,15 +4716,15 @@ type DeleteV1AiEvaluationDatasetsByDatasetIdRequestConfig = Readonly<
  */
 const deleteV1AiEvaluationDatasetsByDatasetIdRequestConfig: DeleteV1AiEvaluationDatasetsByDatasetIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}',
     method: Method.DELETE,
     requestHeaders: {},
     requestBodyType: RequestBodyType.raw,
     responseBodyType: ResponseBodyType.raw,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: [],
     requestDataOptional: false,
@@ -4091,7 +4804,7 @@ export interface IPutV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRes {
  */
 type PutV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/cases/{caseId}',
@@ -4110,15 +4823,15 @@ type PutV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig = Readonly<
  */
 const putV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig: PutV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/cases/{caseId}',
     method: Method.PUT,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId', 'caseId'],
     queryNames: [],
     requestDataOptional: false,
@@ -4175,7 +4888,7 @@ export type IDeleteV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRes = any
  */
 type DeleteV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/cases/{caseId}',
@@ -4194,15 +4907,15 @@ type DeleteV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig = Readonl
  */
 const deleteV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig: DeleteV1AiEvaluationDatasetsByDatasetIdCasesByCaseIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/cases/{caseId}',
     method: Method.DELETE,
     requestHeaders: {},
     requestBodyType: RequestBodyType.raw,
     responseBodyType: ResponseBodyType.raw,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId', 'caseId'],
     queryNames: [],
     requestDataOptional: false,
@@ -4270,7 +4983,7 @@ export interface IGetV1AiEvaluationDatasetsRes {
  */
 type GetV1AiEvaluationDatasetsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets',
@@ -4288,15 +5001,15 @@ type GetV1AiEvaluationDatasetsRequestConfig = Readonly<
  * @请求头 `GET /v1/ai/evaluation-datasets`
  */
 const getV1AiEvaluationDatasetsRequestConfig: GetV1AiEvaluationDatasetsRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_7,
-  devUrl: devUrl_0_0_0_7,
-  prodUrl: prodUrl_0_0_0_7,
+  mockUrl: mockUrl_0_0_0_8,
+  devUrl: devUrl_0_0_0_8,
+  prodUrl: prodUrl_0_0_0_8,
   path: '/v1/ai/evaluation-datasets',
   method: Method.GET,
   requestHeaders: {},
   requestBodyType: RequestBodyType.query,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_7,
+  dataKey: dataKey_0_0_0_8,
   paramNames: [],
   queryNames: ['page', 'pageSize'],
   requestDataOptional: false,
@@ -4355,7 +5068,7 @@ export interface IPostV1AiEvaluationDatasetsRes {
  * @请求头 `POST /v1/ai/evaluation-datasets`
  */
 type PostV1AiEvaluationDatasetsRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:65259/mock/0', '', '', '/v1/ai/evaluation-datasets', 'data', string, string, false>
+  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/v1/ai/evaluation-datasets', 'data', string, string, false>
 >
 
 /**
@@ -4365,15 +5078,15 @@ type PostV1AiEvaluationDatasetsRequestConfig = Readonly<
  * @请求头 `POST /v1/ai/evaluation-datasets`
  */
 const postV1AiEvaluationDatasetsRequestConfig: PostV1AiEvaluationDatasetsRequestConfig = /*#__PURE__*/ {
-  mockUrl: mockUrl_0_0_0_7,
-  devUrl: devUrl_0_0_0_7,
-  prodUrl: prodUrl_0_0_0_7,
+  mockUrl: mockUrl_0_0_0_8,
+  devUrl: devUrl_0_0_0_8,
+  prodUrl: prodUrl_0_0_0_8,
   path: '/v1/ai/evaluation-datasets',
   method: Method.POST,
   requestHeaders: {},
   requestBodyType: RequestBodyType.json,
   responseBodyType: ResponseBodyType.json,
-  dataKey: dataKey_0_0_0_7,
+  dataKey: dataKey_0_0_0_8,
   paramNames: [],
   queryNames: [],
   requestDataOptional: false,
@@ -4518,7 +5231,7 @@ export interface IGetV1AiEvaluationDatasetsByDatasetIdRunsRes {
  */
 type GetV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/runs',
@@ -4537,15 +5250,15 @@ type GetV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig = Readonly<
  */
 const getV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig: GetV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/runs',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: ['page', 'pageSize'],
     requestDataOptional: false,
@@ -4688,7 +5401,7 @@ export interface IPostV1AiEvaluationDatasetsByDatasetIdRunsRes {
  */
 type PostV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/runs',
@@ -4707,15 +5420,15 @@ type PostV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig = Readonly<
  */
 const postV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig: PostV1AiEvaluationDatasetsByDatasetIdRunsRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/runs',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: [],
     requestDataOptional: false,
@@ -4791,7 +5504,7 @@ export interface IGetV1AiEvaluationDatasetsByDatasetIdCasesRes {
  */
 type GetV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/cases',
@@ -4810,15 +5523,15 @@ type GetV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig = Readonly<
  */
 const getV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig: GetV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/cases',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: ['page', 'pageSize'],
     requestDataOptional: false,
@@ -4897,7 +5610,7 @@ export interface IPostV1AiEvaluationDatasetsByDatasetIdCasesRes {
  */
 type PostV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/cases',
@@ -4916,15 +5629,15 @@ type PostV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig = Readonly<
  */
 const postV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig: PostV1AiEvaluationDatasetsByDatasetIdCasesRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/cases',
     method: Method.POST,
     requestHeaders: {},
     requestBodyType: RequestBodyType.json,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId'],
     queryNames: [],
     requestDataOptional: false,
@@ -5066,7 +5779,7 @@ export interface IGetV1AiEvaluationDatasetsByDatasetIdRunsByRunIdRes {
  */
 type GetV1AiEvaluationDatasetsByDatasetIdRunsByRunIdRequestConfig = Readonly<
   RequestConfig<
-    'http://127.0.0.1:65259/mock/0',
+    'http://127.0.0.1:51423/mock/0',
     '',
     '',
     '/v1/ai/evaluation-datasets/{datasetId}/runs/{runId}',
@@ -5085,15 +5798,15 @@ type GetV1AiEvaluationDatasetsByDatasetIdRunsByRunIdRequestConfig = Readonly<
  */
 const getV1AiEvaluationDatasetsByDatasetIdRunsByRunIdRequestConfig: GetV1AiEvaluationDatasetsByDatasetIdRunsByRunIdRequestConfig =
   /*#__PURE__*/ {
-    mockUrl: mockUrl_0_0_0_7,
-    devUrl: devUrl_0_0_0_7,
-    prodUrl: prodUrl_0_0_0_7,
+    mockUrl: mockUrl_0_0_0_8,
+    devUrl: devUrl_0_0_0_8,
+    prodUrl: prodUrl_0_0_0_8,
     path: '/v1/ai/evaluation-datasets/{datasetId}/runs/{runId}',
     method: Method.GET,
     requestHeaders: {},
     requestBodyType: RequestBodyType.query,
     responseBodyType: ResponseBodyType.json,
-    dataKey: dataKey_0_0_0_7,
+    dataKey: dataKey_0_0_0_8,
     paramNames: ['datasetId', 'runId'],
     queryNames: [],
     requestDataOptional: false,

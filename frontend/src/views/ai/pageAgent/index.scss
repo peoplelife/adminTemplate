@@ -1,0 +1,141 @@
+.el-main:has(.page-agent-workspace) > div {
+	height: 100%;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.page-agent-workspace {
+	display: grid;
+	grid-template-columns: minmax(300px, 35%) minmax(0, 1fr);
+	height: 100%;
+	min-height: 0;
+	gap: 16px;
+	padding: 8px;
+	box-sizing: border-box;
+	background: #f5f8f8;
+}
+
+.page-agent-chat {
+	position: relative;
+	display: flex;
+	min-width: 0;
+	min-height: 0;
+	flex-direction: column;
+	padding: 12px;
+	border: 1px solid #dce9e5;
+	border-radius: 16px;
+	background: linear-gradient(180deg, #f0faf7, #f8fbfa);
+
+	> .el-scrollbar {
+		height: 0;
+		min-height: 0;
+		flex: 1;
+	}
+
+	.el-scrollbar__wrap {
+		overflow-x: hidden;
+	}
+
+	.el-scrollbar__view {
+		padding: 8px 6px 24px;
+	}
+
+	.composer {
+		margin: 12px 0 0;
+	}
+
+	.assistant-avatar {
+		width: 30px;
+		height: 30px;
+	}
+
+	.message-row--assistant {
+		gap: 8px;
+	}
+
+	.assistant-panel {
+		max-width: calc(100% - 38px);
+		padding: 12px;
+		box-sizing: border-box;
+	}
+}
+
+.page-agent-empty {
+	margin: 20px 10px;
+	color: #647d77;
+	font-size: 14px;
+	line-height: 1.7;
+
+	p {
+		color: #2d6357;
+		font-size: 18px;
+	}
+	span {
+		font-size: 13px;
+	}
+}
+
+.page-agent-follow {
+	position: absolute;
+	right: 20px;
+	bottom: 158px;
+	z-index: 2;
+	display: flex;
+	width: 32px;
+	height: 32px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #cfe3df;
+	border-radius: 50%;
+	background: #fff;
+	color: #0a8f81;
+	cursor: pointer;
+}
+
+.page-agent-canvas {
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	border: 1px solid #e1e7e6;
+	border-radius: 16px;
+	background: #fff;
+
+	> .el-empty {
+		min-height: 100%;
+		box-sizing: border-box;
+	}
+}
+
+.page-agent-preview {
+	padding: 16px;
+
+	h2 {
+		margin: 0 0 18px;
+		color: #304b45;
+		font-size: 20px;
+	}
+
+	.el-pagination {
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+}
+
+.page-agent-preview__actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+
+	.el-button + .el-button {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 800px) {
+	.page-agent-workspace {
+		grid-template-columns: 1fr;
+		grid-template-rows: minmax(320px, 45%) minmax(300px, 1fr);
+		gap: 10px;
+		overflow: auto;
+	}
+}

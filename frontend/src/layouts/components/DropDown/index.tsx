@@ -6,9 +6,11 @@ import router from '@/routers';
 import { LOGIN_URL } from '@/config';
 import { useUserStore } from '@/stores/modules/user';
 import { computed } from 'vue';
+import GitHubAccountDialog from './GitHubAccountDialog';
 export default defineComponent({
 	setup() {
 		const userStore = useUserStore();
+		const accountDialogVisible = ref(false);
 		const avatar = computed(() => import.meta.env.VITE_API_URL + userStore.userInfo.avatar);
 		//退出登录
 		const logout = async () => {
@@ -19,6 +21,7 @@ export default defineComponent({
 		};
 
 		const handleCommand = (value: string) => {
+			if (value === 'account') accountDialogVisible.value = true;
 			if (value === 'logout') {
 				logout();
 			}
@@ -36,11 +39,16 @@ export default defineComponent({
 						//下拉菜单插槽
 						dropdown: () => (
 							<ElDropdownMenu>
+								<ElDropdownItem command="account">账号绑定</ElDropdownItem>
 								<ElDropdownItem command="logout">退出登录</ElDropdownItem>
 							</ElDropdownMenu>
 						)
 					}}
 				</ElDropdown>
+				<GitHubAccountDialog
+					modelValue={accountDialogVisible.value}
+					onUpdate:modelValue={(value) => (accountDialogVisible.value = value)}
+				/>
 			</div>
 		);
 	}

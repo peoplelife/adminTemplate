@@ -3,6 +3,7 @@ package com.admin.template.controller.file;
 import com.admin.template.dto.file.DeleteFileRequest;
 import com.admin.template.dto.file.UploadedFile;
 import com.admin.template.service.file.FileService;
+import com.admin.template.security.Permission;
 import com.admin.template.common.exception.BizException;
 import com.admin.template.common.exception.BusinessError;
 import com.admin.template.common.response.Result;
@@ -33,7 +34,8 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/v1/files")
-@Tag(name = "文件管理", description = "上传和删除公开文件目录中的文件")
+@Permission("system:file:manage")
+@Tag(name = "文件管理", description = "公开文件目录的管理写入；上传和删除均需要 system:file:manage 权限")
 public class FileController {
     private final FileService fileService;
 
@@ -43,7 +45,7 @@ public class FileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "上传单个文件", description = "上传一个文件，大小不超过 10 MiB；支持 JPEG、PNG、GIF、WebP、PDF、Word 和 Excel。",
+    @Operation(summary = "上传单个文件", description = "需要 system:file:manage 管理权限。上传一个文件，大小不超过 10 MiB；支持 JPEG、PNG、GIF、WebP、PDF、Word 和 Excel。",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
                     content = @Content(mediaType = "multipart/form-data",
                             schema = @Schema(type = "object", requiredProperties = {"file"}),
@@ -61,7 +63,7 @@ public class FileController {
 
     @PostMapping("/batch")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "批量上传文件", description = "上传 1～10 个文件，每个不超过 10 MiB；支持 JPEG、PNG、GIF、WebP、PDF、Word 和 Excel。",
+    @Operation(summary = "批量上传文件", description = "需要 system:file:manage 管理权限。上传 1～10 个文件，每个不超过 10 MiB；支持 JPEG、PNG、GIF、WebP、PDF、Word 和 Excel。",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
                     content = @Content(mediaType = "multipart/form-data",
                             schema = @Schema(type = "object", requiredProperties = {"files"}),
@@ -77,7 +79,7 @@ public class FileController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "删除文件", description = "删除上传结果 URL 对应的文件。成功返回 204，无响应体。")
+    @Operation(summary = "删除文件", description = "需要 system:file:manage 管理权限。删除上传结果 URL 对应的文件。成功返回 204，无响应体。")
     public void delete(@Valid @RequestBody DeleteFileRequest request) {
         fileService.deleteFile(request.filePath());
     }

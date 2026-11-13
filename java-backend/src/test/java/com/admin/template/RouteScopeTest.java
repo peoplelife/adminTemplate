@@ -52,9 +52,17 @@ class RouteScopeTest {
     private JwtService jwtService;
     @org.springframework.boot.test.mock.mockito.MockBean
     private com.admin.template.mapper.UserMapper authenticationUsers;
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.admin.template.mapper.UserRoleMapper userRoles;
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.admin.template.mapper.MenuMapper menus;
 
     @org.junit.jupiter.api.BeforeEach
     void setUpAuthenticationAccount() {
+        org.mockito.Mockito.when(userRoles.selectActiveRolesByUserId(7L))
+                .thenReturn(List.of(new com.admin.template.dto.security.ActiveRole(3L, "file_manager", "File manager")));
+        org.mockito.Mockito.when(menus.selectActivePermissionsForRoleIds(List.of(3L)))
+                .thenReturn(List.of(new com.admin.template.dto.security.MenuPermission("file-write", "system:file:manage")));
         org.mockito.Mockito.when(authenticationUsers.selectById(org.mockito.ArgumentMatchers.anyLong()))
                 .thenAnswer(invocation -> {
                     var user = new com.admin.template.entity.UserEntity();
@@ -128,6 +136,10 @@ class RouteScopeTest {
 
         assertThat(routes).containsExactlyInAnyOrder(
                 "GET /", "POST /v1/auth/login", "POST /v1/auth/logout", "GET /v1/me", "GET /v1/me/menus",
+                "GET /v1/auth/github/config", "POST /v1/auth/github/authorize",
+                "GET /v1/auth/github/callback", "POST /v1/auth/github/complete",
+                "GET /v1/me/github", "DELETE /v1/me/github",
+                "POST /v1/me/github/authorize", "POST /v1/me/github/complete",
                 "GET /v1/users", "POST /v1/users", "GET /v1/users/{id}", "PATCH /v1/users/{id}",
                 "DELETE /v1/users/{id}", "GET /v1/users/export", "GET /v1/roles", "POST /v1/roles",
                 "GET /v1/roles/{id}", "PATCH /v1/roles/{id}", "DELETE /v1/roles/{id}", "GET /v1/menus",

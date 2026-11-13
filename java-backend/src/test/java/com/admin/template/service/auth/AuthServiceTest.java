@@ -29,6 +29,28 @@ class AuthServiceTest {
     private static final String SECRET = "01234567890123456789012345678901";
 
     @Test
+    void passwordlessAccountsRejectNullAndTheLiteralNullPassword() {
+        UserEntity user = new UserEntity();
+        user.id = 5L;
+        user.username = "github_account";
+        user.status = true;
+        UserMapper users = mock(UserMapper.class);
+        when(users.selectOne(any(QueryWrapper.class))).thenReturn(user);
+        UserRoleMapper roles = mock(UserRoleMapper.class);
+        MenuMapper menus = mock(MenuMapper.class);
+        when(roles.selectActiveRolesByUserId(5L)).thenReturn(List.of(new ActiveRole(2L, "user", "User")));
+        when(menus.selectActivePermissionsForRoleIds(List.of(2L))).thenReturn(List.of(new MenuPermission("home", "read")));
+        AuthService service = new AuthService(users, roles, menus, new JwtService(SECRET, false));
+
+        for (String password : new String[]{null, "null", "", "legacy-password"}) {
+            assertThatThrownBy(() -> service.login("github_account", password))
+                    .isInstanceOf(BizException.class)
+                    .hasFieldOrPropertyWithValue("error", BusinessError.INVALID_CREDENTIALS);
+        }
+        assertThat(user.lastLogin).isNull();
+    }
+
+    @Test
     void rejectsDisabledAccountsBeforeIssuingToken() {
         UserEntity user = new UserEntity();
         user.id = 5L;

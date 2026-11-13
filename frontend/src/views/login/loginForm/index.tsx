@@ -1,22 +1,26 @@
-import { ElButton, ElForm, ElFormItem, ElInput, ElNotification, type FormInstance, type FormRules } from 'element-plus';
+import { ElAlert, ElButton, ElForm, ElFormItem, ElInput, type FormInstance, type FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 
 import { useRouter } from 'vue-router';
-import { getV1Me, postV1AuthLogin, type IPostV1AuthLoginReq } from '@/api';
-import { useUserStore } from '@/stores/modules/user';
-import { initDynamicRouters } from '@/routers/modules/dynamicRouters';
-import { useAuthStore } from '@/stores/modules/auth';
-import { HOME_URL } from '@/config';
-import { getTimeState } from '@/utils/time';
+import { getV1AuthGithubConfig, postV1AuthGithubAuthorize, postV1AuthLogin, type IPostV1AuthLoginReq } from '@/api';
+import { finishLogin } from '@/utils/finishLogin';
+import { startGitHubOAuth } from '@/utils/githubOAuth';
 
 export default defineComponent({
 	setup() {
-		const userStore = useUserStore();
-		const authStore = useAuthStore();
-		const menuList = computed(() => authStore.showMenuListGet);
 		const router = useRouter();
 		const loginRef = ref<FormInstance>();
 		const passwordInputRef = ref<HTMLInputElement>();
+		const githubEnabled = ref(false);
+		const busy = ref<'password' | 'github' | ''>('');
+		const errorMessage = ref('');
+		onMounted(async () => {
+			try {
+				githubEnabled.value = (await getV1AuthGithubConfig()).enabled === true;
+			} catch {
+				githubEnabled.value = false;
+			}
+		});
 		//表单数据
 		const formData = ref<IPostV1AuthLoginReq>({
 			username: '',
@@ -46,47 +50,30 @@ export default defineComponent({
 			username: [{ validator: validateUsername, trigger: 'blur' }],
 			password: [{ validator: validatepassword, trigger: 'blur' }]
 		});
-		const getFirstMenuPath = (menu: Menu.MenuOptions) => {
-			let path = '';
-			if (menu.children && menu.children.length) {
-				return getFirstMenuPath(menu.children[0]);
-			} else {
-				path = menu.path;
-			}
-			return path;
-		};
 		//提交逻辑
 		const handleSumbit = async () => {
-			if (!loginRef.value) return;
-
-			// await loginRef.value.validate();
-			const { token } = await postV1AuthLogin(formData.value);
-			//将token保存 后续注入请求头中
-			userStore.setToken(token);
-
-			//获取用户信息
-			const userInfo = await getV1Me();
-			userStore.setUserInfo(userInfo);
-
-			//添加动态路由
-			await initDynamicRouters();
-			const homeAuth = menuList.value?.find((item) => item.path === HOME_URL);
-			console.log(homeAuth);
-			if (homeAuth) {
-				// 有首页权限跳转到首页
-				router.push(HOME_URL);
-			} else {
-				// 没有首页权限,跳转至有权限的第一个菜单
-				const firstMenuPath = getFirstMenuPath(menuList.value[0]);
-				router.push(firstMenuPath);
+			if (!loginRef.value || busy.value) return;
+			busy.value = 'password';
+			errorMessage.value = '';
+			try {
+				const { token } = await postV1AuthLogin(formData.value);
+				await finishLogin(token, router);
+			} catch (error) {
+				errorMessage.value = error?.message || '登录失败，请重试';
+			} finally {
+				busy.value = '';
 			}
-
-			ElNotification({
-				title: getTimeState(),
-				message: '欢迎登录后台模板系统',
-				type: 'success',
-				duration: 3000
-			});
+		};
+		const loginWithGitHub = async () => {
+			if (busy.value || !githubEnabled.value) return;
+			busy.value = 'github';
+			errorMessage.value = '';
+			try {
+				startGitHubOAuth(await postV1AuthGithubAuthorize(), { mode: 'login' });
+			} catch (error) {
+				errorMessage.value = error?.message || 'GitHub 授权失败，请重试';
+				busy.value = '';
+			}
 		};
 		const onUserkeydown = (e) => {
 			if (e.key !== 'Enter' || e.isComposing) return;
@@ -99,7 +86,8 @@ export default defineComponent({
 			await handleSumbit();
 		};
 		return () => (
-			<ElForm ref={loginRef} class="w-300" model={formData.value} rules={rules.value}>
+			<ElForm ref={loginRef} class="w-300" model={formData.value} rules={rules.value} aria-busy={Boolean(busy.value)}>
+				{errorMessage.value && <ElAlert type="error" title={errorMessage.value} closable={false} />}
 				<ElFormItem prop="username">
 					<ElInput
 						v-model={formData.value.username}
@@ -121,10 +109,26 @@ export default defineComponent({
 					></ElInput>
 				</ElFormItem>
 				<ElFormItem>
-					<ElButton class="w-full" type="primary" onClick={handleSumbit}>
+					<ElButton
+						class="w-full"
+						type="primary"
+						loading={busy.value === 'password'}
+						disabled={Boolean(busy.value)}
+						onClick={handleSumbit}
+					>
 						登录
 					</ElButton>
 				</ElFormItem>
+				{githubEnabled.value && (
+					<>
+						<ElFormItem>
+							<ElButton class="w-full" loading={busy.value === 'github'} disabled={Boolean(busy.value)} onClick={loginWithGitHub}>
+								使用 GitHub 登录
+							</ElButton>
+						</ElFormItem>
+						<p class="text-12 text-gray-500">首次授权将自动创建普通用户账号</p>
+					</>
+				)}
 			</ElForm>
 		);
 	}

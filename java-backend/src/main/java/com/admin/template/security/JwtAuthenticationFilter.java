@@ -32,6 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final RequestMatcher PUBLIC_ENDPOINTS = request -> {
         String path = request.getRequestURI().substring(request.getContextPath().length());
         return "/".equals(path) || "/v1/auth/login".equals(path)
+                || "/v1/auth/github/config".equals(path) || "/v1/auth/github/authorize".equals(path)
+                || "/v1/auth/github/callback".equals(path) || "/v1/auth/github/complete".equals(path)
                 || under(path, "/docs") || under(path, "/swagger-ui")
                 || under(path, "/v3/api-docs") || under(path, "/public");
     };

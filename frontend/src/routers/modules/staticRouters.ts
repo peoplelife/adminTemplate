@@ -26,6 +26,14 @@ export const staticRouter: RouteRecordRaw[] = [
 		}
 	},
 	{
+		path: '/oauth/github',
+		name: 'githubOAuth',
+		component: () => import('@/views/oauth/github/index.tsx'),
+		meta: {
+			title: 'GitHub 授权'
+		}
+	},
+	{
 		path: LOGIN_URL,
 		name: 'login',
 		component: () => import('@/views/login/index.tsx'),

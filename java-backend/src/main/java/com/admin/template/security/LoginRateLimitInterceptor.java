@@ -12,7 +12,8 @@ import java.time.Instant;
 /** Applies login throttling before Spring MVC binds and validates the request body. */
 @Component
 public class LoginRateLimitInterceptor implements HandlerInterceptor {
-    private static final String LOGIN_PATH = "/v1/auth/login";
+    public static final String[] LOGIN_PATHS = {"/v1/auth/login", "/v1/auth/github/authorize",
+            "/v1/auth/github/complete", "/v1/me/github/authorize", "/v1/me/github/complete"};
     private final LoginRateLimiter rateLimiter;
 
     public LoginRateLimitInterceptor(LoginRateLimiter rateLimiter) {
@@ -21,7 +22,8 @@ public class LoginRateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!"POST".equalsIgnoreCase(request.getMethod()) || !LOGIN_PATH.equals(request.getRequestURI())) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        if (!"POST".equalsIgnoreCase(request.getMethod()) || !java.util.Arrays.asList(LOGIN_PATHS).contains(path)) {
             return true;
         }
 

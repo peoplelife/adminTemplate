@@ -5,3 +5,5 @@
 三个模块的 Dockerfile、Compose、HTTP/SSE Nginx、生产配置模板、Alembic 迁移服务、持久化卷和 CI/CD 工作流已配置，详见 [Docker 部署](docker.md)。服务器已完成首次部署；HTTPS 及备份恢复脚本仍需单独完善。
 
 首次管理员、密码哈希和普通角色按钮授权仍按 MySQL 准备文档验收，不能通过启动容器代替。现有数据库未被目录迁移修改。
+
+GitHub 账号绑定与登录的 OAuth App、Docker 环境变量、MySQL 增量升级和本地联调步骤见 [GitHub 登录配置](github-login.md)。功能默认关闭，填写配置后启用。

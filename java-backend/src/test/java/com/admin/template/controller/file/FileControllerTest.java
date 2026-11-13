@@ -47,9 +47,17 @@ class FileControllerTest {
     private JwtService jwtService;
     @org.springframework.boot.test.mock.mockito.MockBean
     private com.admin.template.mapper.UserMapper authenticationUsers;
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.admin.template.mapper.UserRoleMapper userRoles;
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.admin.template.mapper.MenuMapper menus;
 
     @org.junit.jupiter.api.BeforeEach
     void setUpAuthenticationAccount() {
+        org.mockito.Mockito.when(userRoles.selectActiveRolesByUserId(7L))
+                .thenReturn(List.of(new com.admin.template.dto.security.ActiveRole(3L, "file_manager", "File manager")));
+        org.mockito.Mockito.when(menus.selectActivePermissionsForRoleIds(List.of(3L)))
+                .thenReturn(List.of(new com.admin.template.dto.security.MenuPermission("file-write", "system:file:manage")));
         org.mockito.Mockito.when(authenticationUsers.selectById(org.mockito.ArgumentMatchers.anyLong()))
                 .thenAnswer(invocation -> {
                     var user = new com.admin.template.entity.UserEntity();

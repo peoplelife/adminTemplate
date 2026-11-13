@@ -10,7 +10,7 @@
 
 初始化脚本的建表和插入部分故意不使用 `IF NOT EXISTS`、`INSERT IGNORE` 或覆盖更新：已有表/重复配置应报错，不能掩盖结构差异。MySQL DDL 隐式提交，建表中途失败可能留下部分表；修正原因后使用另一个空库重试，不对已有库直接重跑。不要用客户端 `--force` 忽略错误。
 
-未导出开发库的 users、user_roles、role_menus 数据。SQL 单独初始化管理员 `admin`，密码 `admin123`，并绑定 `super_admin`，不包含开发用户个人信息或授权。角色菜单分配需要重新审批；不能把开发库的 admin 授权直接当成生产授权。super_admin 按现有代码访问全部有效菜单，不依赖 role_menus。
+未导出开发库的 users、user_roles、role_menus 数据。SQL 单独初始化管理员 `admin`，密码 `admin123`，并绑定 `super_admin`，不包含开发用户个人信息或授权。普通用户 `user` 默认授予首页、AI 目录、知识库问答和页面生成；其他角色菜单分配需要重新审批，不能把开发库的 admin 授权直接当成生产授权。super_admin 按现有代码访问全部有效菜单，不依赖 role_menus。
 
 ## 当前结构与实际盘点
 
@@ -23,12 +23,15 @@
 | menus | 动态菜单及权限项 | menu_id 唯一；parent_id 为逻辑父节点 |
 | user_roles | 用户角色关系 | (user_id,role_id) 唯一，关联 users/roles |
 | role_menus | 角色菜单关系 | (role_id,menu_id) 唯一，关联 roles/menus |
+| user_oauth_accounts | 第三方账号绑定（2026-11-13 新增） | (provider,provider_user_id)、(user_id,provider) 唯一，关联 users |
 
 保留特殊列 `buttonPermission`，不要自动改成下划线。menus 的业务关联键是 menu_id，不是自增 id。保留现有外键的 ON DELETE/UPDATE CASCADE；线上不要手工物理删除用户/角色，Java 使用既有软删除/业务校验流程。
 
 现有 username 唯一约束涵盖软删除用户，删除用户名不能自动复用；本次没有改变该规则。日期列为 DATETIME、秒精度，不携带时区；应用显式使用 UTC，JWT 失效检查依赖 last_logout，不可删除这些字段。
 
-开发库还有旧 NestJS/Prisma 的 `_prisma_migrations`。全新 Java 库不需要创建或伪造该表；若迁移整库，应保留其历史记录，且不要再同时启动旧后端执行 Prisma 迁移。Java 当前不会启动自动建表或迁移。
+开发库还有旧 NestJS/Prisma 的 `_prisma_migrations`。全新 Java 库不需要创建或伪造该表；若迁移整库，应保留其历史记录，且不要再同时启动旧后端执行 Prisma 迁移。Java 本身不会在启动时自动建表或迁移；MySQL 升级由发布脚本管理。
+
+2026-11-13：初始化脚本新增 `user_oauth_accounts`，上述开发库 5 张表盘点为历史记录。本期 `release.sh` 在新版应用启动前依次应用页面生成菜单、GitHub 绑定表及公开注册三份增量 SQL，成功后记入 `schema_migrations`；详情见 [GitHub 登录配置](github-login.md)。新表不保存 GitHub access token。
 
 ## 全新环境初始化
 
@@ -46,7 +49,7 @@ CREATE DATABASE admin_template CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 mysql --host=MYSQL_HOST --user=DEPLOY_USER -p --default-character-set=utf8mb4 admin_template < 01-init.sql
 ```
 
-预期：5 张业务表、3 个角色、10 个菜单、1 个初始管理员及其超级管理员角色关系，孤儿关系计数均为 0，active_super_admin_accounts=1。
+预期：6 张业务表、3 个角色、预置菜单、1 个初始管理员及其超级管理员角色关系，孤儿关系计数均为 0，active_super_admin_accounts=1。`release.sh` 额外创建 `schema_migrations` 记录 MySQL 升级版本，不属于业务表。
 
 初始管理员用户名为 `admin`，密码为 `admin123`，由初始化 SQL 创建并绑定 `super_admin`。按当前 Java 的密码保存/比较方式写入，密码存储改造本次暂不处理。super_admin 访问全部有效菜单，无需额外插入 role_menus。
 
@@ -58,9 +61,11 @@ system:role:list / create / update / delete
 system:menu:list / create / update / delete
 ```
 
-其中 `/ export` 等表示同前缀，例如 `system:user:export`。权限项使用现有 B 类型菜单维护，关联到对应父菜单；由负责人确定哪些角色可获得这些权限，本包不自动授予 admin/user。
+其中 `/ export` 等表示同前缀，例如 `system:user:export`。权限项使用现有 B 类型菜单维护，关联到对应父菜单；由负责人确定哪些角色可获得这些权限，本包不自动授予 admin/user 系统管理按钮权限；`user` 的默认页面菜单与这些按钮权限分别维护。
 
 ## 账户、配置及时间
+
+当前 Docker Compose 使用官方 MySQL 镜像创建 `MYSQL_USER=admin_template`，该账号拥有本业务库权限；本期发布脚本在容器内使用它执行菜单 INSERT、迁移记录及绑定表 CREATE、密码列 ALTER。下面的 DML-only 建议适用于另行收紧权限后的应用运行账号。若改为该方案，必须同时为发布阶段提供拥有本库 CREATE/ALTER/REFERENCES 权限的迁移账号，不能直接用 DML-only 账号执行当前升级；也不需要授予全局权限或使用 root。
 
 管理员负责建库、结构初始化和后续升级。Java 单独使用运行账号，只授予 `admin_template` 的 SELECT、INSERT、UPDATE、DELETE；不授予全局权限、DDL、GRANT OPTION 或 root。由 DBA 在受控入口创建账号及强密码，账号 host 按实际 Docker 网络范围确定，以下只是授予已有账号权限的示例：
 
@@ -84,7 +89,7 @@ mysql 是未来 Compose 服务名，不是开发机地址。不要提交真实 .
 
 若需要保留已有用户/角色关系和菜单自定义，采用完整逻辑备份恢复，不能再执行 01-init.sql 初始化。先停止旧应用写入，盘点业务表与迁移历史；在隔离环境恢复并验证 Java 登录、UTC 时间、权限和菜单。开发账号、个人信息、密码不能未经审批带入生产。
 
-不要对已有库直接执行 CREATE TABLE 基线；也不要再执行旧的新增评测菜单 SQL，01-init.sql 已包含该菜单。日后结构升级应使用经过编号和审阅的增量 SQL，并登记执行时间、数据库、版本、操作人和结果；当前尚未接入自动 MySQL 迁移工具。
+不要对已有库直接执行 CREATE TABLE 基线；也不要再执行旧的新增评测菜单 SQL，01-init.sql 已包含该菜单。日后结构升级应使用经过编号和审阅的增量 SQL，并登记执行时间、数据库、版本、操作人和结果；`release.sh` 使用 `schema_migrations` 记录显式列出的 SQL 文件版本；成功后跳过，失败中止。本期三份 SQL 支持失败重试；MySQL DDL 隐式提交，后续变更仍须评估中途失败的重试方式，不允许忽略错误或改写已应用版本。
 
 ## 备份与恢复演练
 

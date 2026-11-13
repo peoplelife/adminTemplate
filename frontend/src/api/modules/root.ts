@@ -26,7 +26,7 @@ export type Request<
   requestConfig: TRequestConfig
 }
 
-const mockUrl_0_0_0_0 = 'http://127.0.0.1:51423/mock/0' as any
+const mockUrl_0_0_0_0 = 'http://127.0.0.1:64948/mock/0' as any
 const devUrl_0_0_0_0 = '' as any
 const prodUrl_0_0_0_0 = '' as any
 const dataKey_0_0_0_0 = 'data' as any
@@ -54,7 +54,7 @@ export type IGetRes = any
  * @请求头 `GET /`
  */
 type GetRequestConfig = Readonly<
-  RequestConfig<'http://127.0.0.1:51423/mock/0', '', '', '/', 'data', string, string, true>
+  RequestConfig<'http://127.0.0.1:64948/mock/0', '', '', '/', 'data', string, string, true>
 >
 
 /**

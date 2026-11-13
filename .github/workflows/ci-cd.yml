@@ -20,6 +20,13 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check release migration ordering and failure handling
+        run: bash -n deploy/release.sh && bash deploy/tests/release.test.sh
+
   frontend:
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +86,7 @@ jobs:
 
   images:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    needs: [frontend, java, python]
+    needs: [frontend, java, python, deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

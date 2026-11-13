@@ -11,6 +11,11 @@ public enum BusinessError {
     AUTH_REQUIRED(110005, "未提供有效的 Bearer Token"),
     ACCOUNT_WITHOUT_ROLE(110006, "当前账号未分配角色或菜单权限，请联系管理员"),
     ACCOUNT_WITHOUT_PERMISSION(110007, "当前账号未分配菜单权限，请联系管理员"),
+    GITHUB_DISABLED(110008, "GitHub 登录未启用或配置不完整"),
+    GITHUB_FLOW_INVALID(110009, "GitHub 授权已失效，请重新发起授权"),
+    GITHUB_DENIED(110010, "已取消 GitHub 授权，请重新尝试"),
+    GITHUB_BINDING_CONFLICT(110012, "GitHub 或当前账号已有其他绑定，请先解除原绑定"),
+    GITHUB_ONLY_LOGIN(110013, "当前账号仅支持 GitHub 登录，暂时无法解绑"),
 
     USER_NOT_FOUND(120001, "用户不存在"),
     USERNAME_EXISTS(120002, "用户名已存在"),

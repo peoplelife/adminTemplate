@@ -8,7 +8,8 @@ public enum SystemError {
     FILE_DELETE_FAILED(150102, HttpStatus.INTERNAL_SERVER_ERROR, "文件删除失败"),
     AI_SERVICE_ERROR(160001, HttpStatus.BAD_GATEWAY, "AI 服务暂时不可用"),
     RAG_EMBEDDING_ERROR(160501, HttpStatus.BAD_GATEWAY, "Embedding 服务暂时不可用"),
-    RAG_GENERATION_ERROR(160502, HttpStatus.BAD_GATEWAY, "生成模型服务暂时不可用");
+    RAG_GENERATION_ERROR(160502, HttpStatus.BAD_GATEWAY, "生成模型服务暂时不可用"),
+    GITHUB_SERVICE_ERROR(170001, HttpStatus.BAD_GATEWAY, "GitHub 服务暂时不可用，请重新发起授权");
 
     private final int code;
     private final HttpStatus status;

@@ -15,6 +15,7 @@ router.beforeEach(async (to, from, next) => {
 	const authStore = useAuthStore();
 	const userStore = useUserStore();
 	NProgress.start();
+	if (to.path === '/oauth/github') return next();
 	//判断访问路由是否为/login,有token就在当前页，没有则重置路由到登录页
 	if (to.path.toLocaleLowerCase() === '/login') {
 		if (userStore.token) return next(from.fullPath);

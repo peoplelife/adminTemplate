@@ -50,9 +50,9 @@ JSON 使用现有公共响应包装，业务数据位于 `data`，业务字段�
 
 入口为 AI → 页面生成；路由 `/ai/page-agent`，组件 `/ai/pageAgent/index`，沿用现有动态菜单和角色授权机制。
 
-新数据库使用 `deploy/mysql/init/01-init.sql`。已有数据库只执行一次 `deploy/mysql/migrations/2026-11-12-page-agent-menu.sql`；不要重新执行初始化 SQL。超级管理员自动可见，其他角色通过现有菜单管理授权。菜单脚本只增加记录，不新增表。
+新数据库使用 `deploy/mysql/init/01-init.sql`。已有数据库由本期 `deploy/release.sh` 在新版应用启动前自动执行 `deploy/mysql/migrations/2026-11-12-page-agent-menu.sql`，与 GitHub 绑定表一同升级；不要重新执行初始化 SQL。脚本可重复执行，已有菜单不会重复插入或被覆盖。超级管理员自动可见，其他角色通过现有菜单管理授权。菜单脚本只增加记录，不新增表。
 
-本机 `127.0.0.1:3306/admin_template` 已执行增量菜单脚本并验证组件路径。生产数据库未执行；该脚本需随部署单独应用到已有生产库。重新登录可刷新现有前端的菜单列表。
+本机 `127.0.0.1:3306/admin_template` 此前已执行增量菜单脚本并验证组件路径。生产库由 CI/CD 发布时应用，本次未直接连接生产数据库。发布后重新登录可刷新前端菜单列表。
 
 运行前确认 Python 已执行 `uv sync --locked`、公共 Redis 可用、公共模型配置有效、Java 的服务令牌与 Python 一致。Java/Python 需要加载本轮代码；前端 API 已使用 Java OpenAPI 运行命令生成，不需手工补接口。
 

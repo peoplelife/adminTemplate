@@ -41,9 +41,20 @@ public class AuthService {
     @Transactional
     public LoginResponse login(String username, String password) {
         UserEntity user = userMapper.selectOne(new QueryWrapper<UserEntity>().eq("username", username));
-        if (user == null || !String.valueOf(password).equals(String.valueOf(user.password))) {
+        if (user == null || user.password == null || !String.valueOf(password).equals(user.password)) {
             throw new BizException(BusinessError.INVALID_CREDENTIALS);
         }
+        return finishLogin(user);
+    }
+
+    @Transactional
+    public LoginResponse loginTrustedUser(long userId) {
+        UserEntity user = userMapper.selectById(userId);
+        if (user == null || user.deletedAt != null) throw new BizException(BusinessError.USER_NOT_FOUND);
+        return finishLogin(user);
+    }
+
+    private LoginResponse finishLogin(UserEntity user) {
         if (!Boolean.TRUE.equals(user.status)) {
             throw new BizException(BusinessError.ACCOUNT_DISABLED);
         }

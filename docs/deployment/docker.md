@@ -23,7 +23,7 @@ Java 激活 `prod`。Python 设置 `APP_ENV=production`、`DEBUG=false`；同一
 
 ## CI/CD 发布
 
-`matser` 分支的 push 会触发根目录 `.github/workflows/ci-cd.yml`：先运行前端、Java 和 Python 测试，再构建并推送三个 GHCR 镜像，最后通过 SSH 调用服务器上的 `deploy/release.sh`。发布脚本只拉取指定提交的镜像，执行 Alembic 迁移，等待数据库和应用健康后完成更新；服务器上的 `deploy/.env` 不会被工作流覆盖。
+`matser` 分支的 push 会触发根目录 `.github/workflows/ci-cd.yml`：先运行前端、Java 和 Python 测试，再构建并推送三个 GHCR 镜像，最后通过 SSH 调用服务器上的 `deploy/release.sh`。发布脚本拉取指定提交的镜像，等待 MySQL/PostgreSQL/Redis 健康后，先按版本依次应用页面生成菜单、GitHub 绑定表、公开注册三份 MySQL 增量 SQL，再执行 Alembic，最后启动新版应用并等待健康；服务器上的 `deploy/.env` 不会被工作流覆盖。MySQL 成功执行的版本记录在 `schema_migrations` 并在下次发布跳过；失败版本不登记，任何一步失败都会中止发布。本期脚本支持失败后的重试。
 
 日常更新只需要提交并推送到 `matser`。如果需要查看状态，在 GitHub Actions 查看对应提交；服务器上可执行 `docker compose ps -a` 和 `docker compose logs --tail=100 java python migrate` 检查容器。工作流失败时不会删除数据卷，先修复失败原因，再重新运行对应工作流。
 
@@ -56,7 +56,7 @@ chmod 600 .env
 
 启动链为 PostgreSQL 就绪 → `migrate` 成功 → Python 就绪 → Java 就绪 → 前端；Java 同时等待 MySQL 初始化完成，Python 同时等待 Redis。`migrate` 正常退出码应为 0；`up -d` 返回不代表所有服务已经就绪，要检查健康状态和日志。
 
-MySQL 仅在空数据卷首次启动时执行 `mysql/init/01-init.sql`，包含表、角色、菜单及初始管理员 `admin` / `admin123`，同时绑定 `super_admin`。PostgreSQL 首次初始化执行 `postgres/init/01-init.sh`，创建 pgvector 和普通应用账号；全部业务表由 `alembic upgrade head` 在 `public` 中创建。初始化目录不是增量升级工具，不会在已有数据卷上重复执行。
+MySQL 仅在空数据卷首次启动时执行 `mysql/init/01-init.sql`，包含表、角色、菜单及初始管理员 `admin` / `admin123`，同时绑定 `super_admin`。PostgreSQL 首次初始化执行 `postgres/init/01-init.sh`，创建 pgvector 和普通应用账号；全部业务表由 `alembic upgrade head` 在 `public` 中创建。初始化目录不是增量升级工具，不会在已有数据卷上重复执行。已有库的本期变更由 `release.sh` 显式执行 `mysql/migrations/2026-11-12-page-agent-menu.sql`、`2026-11-13-github-login.sql`、`2026-11-13-github-registration.sql`；新库也可安全应用这三份增量 SQL，成功版本随后跳过。后续 SQL 须单独审阅并接入发布，不会自动扫描执行整个目录。
 
 使用初始管理员登录，按 [MySQL 准备说明](mysql.md) 验收角色权限、上传、问答和评测。不要把“容器已启动”视为“业务已可用”。本次不修改密码存储逻辑。
 

@@ -1,6 +1,6 @@
 # Java Backend
 
-基于 Java 21、Spring Boot 3.5.6、Maven 和 MyBatis-Plus 的管理后台。沿用 `backend` 的非 AI 接口、MySQL 五张表和前端 JSON 契约，并通过 Python AI 服务提供非流式聊天和基于会话的 SSE 对话接口。
+基于 Java 21、Spring Boot 3.5.6、Maven 和 MyBatis-Plus 的管理后台。沿用 `backend` 的非 AI 接口和前端 JSON 契约，使用 MySQL 基础表与 OAuth 关联表，并通过 Python AI 服务提供非流式聊天和基于会话的 SSE 对话接口。
 
 ## 项目结构
 
@@ -14,7 +14,7 @@ java-backend/
 │   ├── service/                 # 业务规则及事务
 │   │   └── auth/user/role/menu/file/ai/
 │   ├── mapper/                  # MyBatis 数据访问
-│   ├── entity/                  # 五张表的映射
+│   ├── entity/                  # 数据库表的映射
 │   ├── dto/                     # 请求、响应和查询投影
 │   ├── config/                  # Security、MVC、MyBatis、上传和 OpenAPI 配置
 │   ├── security/                # JWT、权限注解/拦截器和登录限流
@@ -56,6 +56,8 @@ mvn -ntp spring-boot:run
 | `AI_RAG_SERVICE_TOKEN` | Java 调用 Python RAG 内部接口使用的服务凭证；须与 Python `RAG_SERVICE_TOKEN` 一致 |
 | `AI_RAG_CONNECT_TIMEOUT` / `AI_RAG_READ_TIMEOUT` | RAG 服务连接和读取超时，默认 `3s` / `60s` |
 
+GitHub 登录默认关闭，无需 OAuth 配置即可启动。启用时设置 `APP_AUTH_GITHUB_ENABLED=true` 以及 `APP_AUTH_GITHUB_CLIENT_ID`、`APP_AUTH_GITHUB_CLIENT_SECRET`、`APP_AUTH_GITHUB_REDIRECT_URI`、`APP_AUTH_GITHUB_FRONTEND_REDIRECT_URI`。回调和前端地址必须同源；本地回调通过前端 `/api` 代理访问 Java。创建 GitHub OAuth App、关联表迁移和完整配置示例见 [GitHub 登录配置](../docs/deployment/github-login.md)。任何 GitHub 用户首次授权会自动创建无密码的普通用户并分配已有且启用的 `user` 角色；不按用户名或邮箱合并已有账号，后续以 GitHub 稳定 ID 登录原绑定账号。注册与角色关系、绑定、登录权限检查在同一事务内完成，缺少启用角色或菜单时全部回滚。无密码账号不能使用账号密码登录，也不能解绑唯一的 GitHub 登录方式（业务码 `110013`）；已有密码账号仍可正常解绑。升级前需应用 GitHub 公开注册迁移，将 `users.password` 改为允许 NULL 并初始化普通用户菜单。功能关闭时绑定查询直接返回未启用且未绑定，不访问关联表。
+
 Java 与原 Node 服务同时运行时，请为其中一个配置不同的 `SERVER_PORT`。
 
 测试环境使用 `src/main/resources/application-test.yml`，默认使用 H2 的 MySQL 兼容模式，也可通过 `SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD` 和 `SPRING_DATASOURCE_DRIVERCLASSNAME` 覆盖为其他测试数据库。启动测试环境时显式激活 `test` profile；该 profile 使用正常的鉴权规则。
@@ -90,6 +92,8 @@ java -jar target/admin-template-backend-0.1.0-SNAPSHOT.jar --spring.profiles.act
 | --- | --- |
 | 根路径 | `GET /` |
 | 认证 | `POST /v1/auth/login`、`POST /v1/auth/logout` |
+| GitHub 登录 | `GET /v1/auth/github/config`、`POST /v1/auth/github/authorize`、`GET /v1/auth/github/callback`、`POST /v1/auth/github/complete` |
+| GitHub 绑定 | `GET/DELETE /v1/me/github`、`POST /v1/me/github/authorize`、`POST /v1/me/github/complete` |
 | 当前用户 | `GET /v1/me`、`GET /v1/me/menus` |
 | 用户 | `GET/POST /v1/users`、`GET/PATCH/DELETE /v1/users/{id}`、`GET /v1/users/export` |
 | 角色 | `GET/POST /v1/roles`、`GET/PATCH/DELETE /v1/roles/{id}` |
@@ -103,11 +107,11 @@ java -jar target/admin-template-backend-0.1.0-SNAPSHOT.jar --spring.profiles.act
 | AI 评测报告 | `GET/POST /v1/ai/evaluation-datasets/{datasetId}/runs`、`GET /v1/ai/evaluation-datasets/{datasetId}/runs/{runId}` |
 | AI 文档 | `POST /v1/ai/knowledge-bases/{knowledgeBaseId}/documents`（multipart，同步完成索引）、`GET /v1/ai/knowledge-bases/{knowledgeBaseId}/documents`、`GET /v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}`、`GET /v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/content`、`POST /v1/ai/knowledge-bases/{knowledgeBaseId}/documents/{documentId}/reindex`（同步重建） |
 
-`/v1` JSON 接口由 Controller 显式返回统一 `Result<T>`：成功和错误都包含 `code`、`data`、`message`、`success`、`traceId`、`timestamp`、`details`。成功时 `code=0`；业务异常、鉴权和参数校验失败使用 HTTP 200，并返回独立数字业务码，例如密码错误 `110001`、Token 无效 `110002`、账号禁用 `110003`、用户名已存在 `120002`、参数校验失败 `100001`。错误时 `success=false`、`data=null`，字段校验详情使用 `path`、`message`、`type`。完整码表见 [项目规范](docs/java-backend-spec.md)。HTTP 协议错误和服务器/外部服务故障保留真实 HTTP 状态码。保留 `X-Trace-Id`、204 空响应和 Excel 原始附件响应。除登录外，管理接口使用 `Authorization: Bearer <token>`，业务权限沿用现有菜单权限代码。
+`/v1` JSON 接口由 Controller 显式返回统一 `Result<T>`：成功和错误都包含 `code`、`data`、`message`、`success`、`traceId`、`timestamp`、`details`。成功时 `code=0`；业务异常、鉴权和参数校验失败使用 HTTP 200，并返回独立数字业务码，例如密码错误 `110001`、Token 无效 `110002`、账号禁用 `110003`、用户名已存在 `120002`、参数校验失败 `100001`。错误时 `success=false`、`data=null`，字段校验详情使用 `path`、`message`、`type`。完整码表见 [项目规范](docs/java-backend-spec.md)。HTTP 协议错误和服务器/外部服务故障保留真实 HTTP 状态码。保留 `X-Trace-Id`、204 空响应和 Excel 原始附件响应。除密码登录和四个公开 GitHub 登录路径外，管理接口使用 `Authorization: Bearer <token>`，业务权限沿用现有菜单权限代码。
 
-上传返回的 `/public/uploads/...` 等相对 URL 可公开访问。每文件不超过 10 MiB，每批最多 10 个，沿用图片、PDF、Word、Excel MIME 白名单。文件操作限定在公开文件根目录内。静态文件统一使用 `/public/**`，旧的根路径文件链接需要补上 `/public` 前缀，磁盘文件无需移动。
+上传返回的 `/public/uploads/...` 等相对 URL 可公开访问。每文件不超过 10 MiB，每批最多 10 个，沿用图片、PDF、Word、Excel MIME 白名单。通用上传和删除是管理操作，三个写入接口均要求 `system:file:manage` 权限；普通注册用户不获此权限，超级管理员或管理员明确分配该权限的角色可写入。该权限在系统用户管理下的“公开文件管理”按钮菜单配置。文件操作限定在公开文件根目录内。静态文件统一使用 `/public/**`，旧的根路径文件链接需要补上 `/public` 前缀，磁盘文件无需移动。
 
-认证默认开启：仅根页、登录、`/docs/**`、`/swagger-ui/**`、`/v3/api-docs/**` 和 `/public/**` 公开；其他路径必须携带有效 Bearer Token，包括新增业务路由。公开白名单由 `JwtAuthenticationFilter.PUBLIC_ENDPOINTS` 定义，安全链与 JWT 过滤器共用。未登录仍沿用 HTTP 200、业务码 110005 的接口约定；已登录访问不存在的路由返回 404。SSE 异步派发沿用初次请求的认证结果。
+认证默认开启：仅根页、密码登录、上表四个精确 GitHub 登录路径、`/docs/**`、`/swagger-ui/**`、`/v3/api-docs/**` 和 `/public/**` 公开；其他路径必须携带有效 Bearer Token，包括新增业务路由。公开白名单由 `JwtAuthenticationFilter.PUBLIC_ENDPOINTS` 定义，安全链与 JWT 过滤器共用。未登录仍沿用 HTTP 200、业务码 110005 的接口约定；已登录访问不存在的路由返回 404。SSE 异步派发沿用初次请求的认证结果。
 
 
 新 AI 会话接口使用 `knowledgeBaseId` 区分普通对话和知识库对话；发送消息时传入 `clientRequestId` 和 `content`。会话流额外返回 `sources` 引用事件，`done` 表示回答已保存；刷新页面可通过消息历史接口读取消息和来源快照。接口需要业务 JWT，服务间凭证由 Java 配置并且不由客户端提交。

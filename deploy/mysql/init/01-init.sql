@@ -9,7 +9,7 @@ SET time_zone = '+00:00';
 CREATE TABLE `users` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户名',
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码',
+  `password` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '密码',
   `nickname` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '昵称',
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '手机号',
@@ -25,6 +25,20 @@ CREATE TABLE `users` (
   KEY `idx_email` (`email`),
   KEY `idx_phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+CREATE TABLE `user_oauth_accounts` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '关联ID',
+  `user_id` bigint NOT NULL COMMENT '系统用户ID',
+  `provider` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '身份提供方',
+  `provider_user_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '第三方稳定用户ID',
+  `provider_username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '第三方登录名，仅展示',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '绑定时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_oauth_provider_user` (`provider`, `provider_user_id`),
+  UNIQUE KEY `uk_oauth_user_provider` (`user_id`, `provider`),
+  CONSTRAINT `fk_oauth_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='第三方账号绑定';
 
 CREATE TABLE `roles` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '角色ID',
@@ -108,6 +122,13 @@ INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sor
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_ai_rag_evaluation', 'menu_1778841163540_899', '知识库检索评测', '/ai/rag-evaluation', '/ai/ragEvaluation/index', 'DataAnalysis', '1', '0', '0', 'C', NULL, '1');
 INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`path`,`component`,`icon`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_ai_page_agent', 'menu_1778841163540_899', '页面生成', '/ai/page-agent', '/ai/pageAgent/index', 'MagicStick', '2', '0', '0', 'C', NULL, '1');
 
+INSERT INTO `menus` (`menu_id`,`parent_id`,`name`,`sort`,`hidden`,`is_full`,`type`,`buttonPermission`,`status`) VALUES ('menu_system_file_manage', '1001', '公开文件管理', 4, 0, 0, 'B', 'system:file:manage', 1);
+
+-- Default access for ordinary users; system-management permissions remain separate.
+INSERT INTO role_menus (role_id, menu_id)
+SELECT r.id, m.menu_id FROM roles r CROSS JOIN menus m
+WHERE r.code = 'user' AND m.path IN ('/home', '/ai', '/ai/intelligentConversation', '/ai/page-agent');
+
 INSERT INTO `users` (`username`, `password`, `nickname`, `status`)
 VALUES ('admin', 'admin123', '超级管理员', 1);
 
@@ -126,14 +147,14 @@ SELECT VERSION() AS mysql_version, DATABASE() AS current_database,
 SELECT TABLE_NAME, ENGINE, TABLE_COLLATION
 FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = DATABASE()
-  AND TABLE_NAME IN ('users', 'roles', 'menus', 'user_roles', 'role_menus')
+  AND TABLE_NAME IN ('users', 'roles', 'menus', 'user_roles', 'role_menus', 'user_oauth_accounts')
 ORDER BY TABLE_NAME;
 
 SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE,
        GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS indexed_columns
 FROM information_schema.STATISTICS
 WHERE TABLE_SCHEMA = DATABASE()
-  AND TABLE_NAME IN ('users', 'roles', 'menus', 'user_roles', 'role_menus')
+  AND TABLE_NAME IN ('users', 'roles', 'menus', 'user_roles', 'role_menus', 'user_oauth_accounts')
 GROUP BY TABLE_NAME, INDEX_NAME, NON_UNIQUE
 ORDER BY TABLE_NAME, INDEX_NAME;
 
